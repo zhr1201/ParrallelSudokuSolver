@@ -2,5 +2,5 @@
 
 CMSC818X High Performance Computing final project
 
-# Ref
+## Reference
 http://individual.utoronto.ca/rafatrashid/Projects/2012/SudokuReport.pdf
