@@ -5,11 +5,11 @@
 namespace sudoku {
 
 void TestSplitStr() {
-    // std::string str("a,b,c");
-    // std::vector<std::string> split_rst = split(str, ",");
-    // assert(split_rst[0] == "a");
-    // assert(split_rst[1] == "b");
-    // assert(split_rst[2] == 'c');
+    std::string str("a,b,c");
+    std::vector<std::string> split_rst = split(str, ",");
+    assert(split_rst[0] == "a");
+    assert(split_rst[1] == "b");
+    assert(split_rst[2] == "c");
 }
 
 }
