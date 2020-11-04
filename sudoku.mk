@@ -1,8 +1,3 @@
-# This file was generated using the following command:
-# ./configure 
-
-CONFIGURE_VERSION := 10
-
 # Toolchain configuration
 
 CXX = g++
