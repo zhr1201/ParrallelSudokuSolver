@@ -7,7 +7,7 @@ TESTFILES = generator-test
 
 OBJFILES = file-parser.o generator.o sudoku-problem.o
 
-LIBNAME = sudoku-solver
+LIBNAME = sudoku-generator
 
 ADDLIBS = 
 

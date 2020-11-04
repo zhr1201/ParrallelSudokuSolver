@@ -7,7 +7,7 @@ TESTFILES = string-utils-test
 
 OBJFILES = string-utils.o 
 
-LIBNAME = sudoku-solver
+LIBNAME = sudoku-util
 
 ADDLIBS = 
 
