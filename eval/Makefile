@@ -7,7 +7,7 @@ TESTFILES =
 
 OBJFILES = eval-controller.o 
 
-LIBNAME = sudoku-solver
+LIBNAME = sudoku-eval
 
 ADDLIBS = 
 

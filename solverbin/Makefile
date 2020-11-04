@@ -4,7 +4,7 @@ all:
 EXTRA_CXXFLAGS = -Wno-sign-compare
 include ../sudoku.mk
 
-BINFILES = solvesudoku
+BINFILES = solve-sudoku
 
 OBJFILES =
 
