@@ -9,7 +9,7 @@ namespace sudoku {
 class Solvable {
 public:
     virtual Element GetElement(size_t x_idx, size_t y_idx) const = 0;
-    ~virtual ~GetElement() {};
+    virtual ~Solvable() {};
 };
 
 
