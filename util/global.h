@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <stdint.h>
 
 #define DISALLOW_CLASS_COPY_AND_ASSIGN(type) type(const type &); type& operator=(const type &)
 
@@ -40,8 +41,8 @@
 
 
 // Global alias
-using Element = size_t;
-using SudokuMat = std::vector<std::vector<size_t>>;
+using Element = uint8_t;
+using SudokuMat = std::vector<std::vector<Element>>;
 
 
 #endif // _GLOBAL_H_
