@@ -7,9 +7,6 @@
 #include "itf/solvable-itf.h"
 
 
-#define TEN_ONES 0x3FF
-
-
 namespace sudoku {
 
 
@@ -94,21 +91,23 @@ public:
 
     ProblemStateBase(Solvable *problem);
     ProblemStateBase(Solvable &other);
+
     ProblemStateBase& operator=(const ProblemStateBase& other);
-
-    ~ProblemStateBase();
-
-    bool Set(size_t y_idx, size_t x_idx, Element val);
-
     // helper for using copy constructor for assignment
     friend void swap(ProblemStateBase &first, ProblemStateBase &second);
 
+    bool CheckValid() { return valid_; };
+
+    virtual ~ProblemStateBase();  // possible inheritance
+
+    bool Set(size_t y_idx, size_t x_idx, Element val);
+
+    
+
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
-
-    void RemoveNode(ElementState *node);
-
     ElementState ele_arr_[N_GRID];
+    bool valid_;
 
 };
 

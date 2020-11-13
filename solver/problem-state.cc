@@ -108,26 +108,45 @@ bool ProblemStateBase::ElementState::NotifySubscriberPossibilities(Element val) 
 }
 
 bool ProblemStateBase::ElementState::UpdateConstraints(Element val) {
-    if (!constraints_[val])
-        --n_possibilities_;
+    if (!constraints_[val]) {
+        if (--n_possibilities_ <= 0) {
+            return false;
+        }
+        if (NotifySubscriberPossibilities(val)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
     constraints_[val] = true;
     return true;
+    }
 }
 
 bool ProblemStateBase::ElementState::UpdatePossibilities(Element val) {
-    if ((--peer_possibilities_array_[val]) > 0)
-        return true;
-    else
-        return false;
-    
+    --peer_possibilities_array_[val];
+    SUDOKU_ASSERT(peer_possibilities_array_[val] >= 0);
+    return true;
 }
 
 
 // an expensive setup O(N^3), but reduce repeatedly computing active peers later
-ProblemStateBase::ProblemStateBase(Solvable *problem) {  
+ProblemStateBase::ProblemStateBase(Solvable *problem) :
+        valid_(true) {  
     for (size_t i = 0; i < SIZE; ++i) {
         for (size_t j = 0; j < SIZE; ++j) {
             SubscribePeers(i, j);
+        }
+    }
+
+    for (size_t i = 0; i < SIZE; ++i) {
+        for (size_t j = 0; j < SIZE; ++j) {
+            Element tmp = problem->GetElement(i, j);
+            if (tmp != UNFILLED) {
+                if (!Set(j, i, tmp)) {
+                    valid_ = false;
+                }
+            }
         }
     }        
 }
@@ -164,7 +183,11 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
     }
 }
 
-
-
+bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
+    ElementState node = ele_arr_[Idx2Offset(y_idx, x_idx)];
+    SUDOKU_ASSERT(node.val_ == UNFILLED);
+    node.val_ = val;
+    return node.NotifySubscriberConstraints();
+}
 
 }
