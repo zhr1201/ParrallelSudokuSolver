@@ -147,6 +147,9 @@ bool ProblemStateBase::ElementState::UpdateConstraints(Element val) {
 bool ProblemStateBase::ElementState::UpdatePossibilities(Element val) {
     --peer_possibilities_array_[val];
     SUDOKU_ASSERT(peer_possibilities_array_[val] >= 0);
+    if (peer_possibilities_array_[val] == 0) {
+        val_fix_ = val;
+    }
     return true;
 }
 
@@ -212,6 +215,11 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
 bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
     ElementState node = ele_arr_[Idx2Offset(y_idx, x_idx)];
     SUDOKU_ASSERT(node.val_ == UNFILLED);
+
+    if (node.constraints_[val]) {
+        return false;
+    }
+
     node.val_ = val;
     node.UnSubcribeAllForCur();
     RemoveFromList(head_, tail_, &ele_list_[Idx2Offset(y_idx, x_idx)]);
@@ -235,6 +243,19 @@ size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) 
         return 0;
     }
     
+}
+
+bool ProblemStateBase::GetIdxFxiedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const {
+    ElementListNode *cur = head_;
+    while (cur != nullptr) {
+        if (cur->state_->val_fix_ != UNFILLED) {
+            y_idx = cur->state_->y_idx_;
+            x_idx = cur->state_->x_idx_;
+            val = cur->state_->val_fix_;
+            return true;
+        }
+    }
+    return false;
 }
 
 }

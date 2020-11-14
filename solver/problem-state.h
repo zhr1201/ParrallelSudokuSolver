@@ -1,6 +1,8 @@
 // sovler/problem-state.h (author: Haoran Zhou)
 
-// Class for maintining the current problem solving state and pruning the search tree
+// Class for maintining the current problem solving state and provide prunning info
+// the logic of prunning and searching is not implemented outside this class
+// this could lead to a slightly worse performance but better software architecture
 
 // !!!IMPORTANT!!!: use stack for alloc the memory because performance is the top priority
 // Heap allocation is extreamly slow. Don't use STL containers that could potentional use the new operator or malloc
@@ -45,7 +47,7 @@ class ProblemStateBase {
     struct ElementState {
 
         ElementState() :
-                val_(UNFILLED), n_possibilities_(N_NUM - 1),
+                val_(UNFILLED), n_possibilities_(N_NUM - 1), val_fix_(UNFILLED), 
                 head_(nullptr), tail_(nullptr) {
             std::fill(peer_possibilities_array_, peer_possibilities_array_ + N_NUM, N_PEERS);
         }
@@ -77,6 +79,9 @@ class ProblemStateBase {
         // index 0 is meaningless, it is just used to be consistent with
         // the numbers we can fill in the sudoku matrix
         size_t peer_possibilities_array_[N_NUM];
+        // the value is set to x if peer_possibilities_array_[x] == 0
+        // but the logic of setting val_ is left for the solver class 
+        Element val_fix_;
         
         //std::bitset<N_NUM> constraints_;
         // faster access than bitset
@@ -125,9 +130,14 @@ public:
     // worst case O(N ^ 2) to prop constraints but get smaller near the end
     bool Set(size_t y_idx, size_t x_idx, Element val);
 
+    // prune criteria 1
     // returns num possibility and indices
-    // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation
+    // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation and N is only 9
     size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const; 
+
+    // prune criteria 2
+    // all other peers force the current element to take a certain value
+    bool GetIdxFxiedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
