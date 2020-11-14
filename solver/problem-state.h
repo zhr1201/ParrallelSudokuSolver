@@ -1,25 +1,30 @@
+// sovler/problem-state.h (author: Haoran Zhou)
+
+// Class for maintining the current problem solving state and pruning the search tree
+
+// !!!IMPORTANT!!!: use stack for alloc the memory because performance is the top priority
+// Heap allocation is extreamly slow. Don't use STL containers that could potentional use the new operator or malloc
+// If dynamic heap memory allocation is neccesary, consider using a global memory pool
+
+// TODO: declared as base since there could potentially be multiple serializaton implementations
+// possible serialization:
+//     1. output the sudoku matrix (min communication overhead)
+//     2. output all the information includding the subscriber list
+//        we can serielize the list using the element index
+
+
 #ifndef __PROBLEM_INFO__
 #define __PROBLEM_INFO__
 
 #include <queue>
 #include <stack>
+
 #include "util/global.h"
 #include "itf/solvable-itf.h"
 
 
 namespace sudoku {
 
-
-// class for the current problem solving state
-
-// TODO: declared as base since there could potentially be multiple serializaton implementations
-// possible serialization:
-//     1. output the sudoku matrix (min communication overhead)
-//     2. output all the information includding the subscriber list
-//        we can serielize the list using the element indices
-
-// use stack for alloc this data structure because performance is the biggest priority
-// if used with new for heap memory allocation, consider using a memory pool
 
 class ProblemStateBase {
 
@@ -32,6 +37,11 @@ class ProblemStateBase {
         ElementListNode* prev_;
     };
 
+    // private list helper
+    static void InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *const insert);
+
+    static void RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *const remove);
+ 
     struct ElementState {
 
         ElementState() :
@@ -42,7 +52,9 @@ class ProblemStateBase {
 
         void Subscribe(ElementState* state);
 
-        void UnSubScribe(ElementState *state);
+        void UnSubscribe(ElementState *state);
+        // subsubscribe the current node from all peers
+        void UnSubcribeAllForCur();
         
         // return 0 if not solvable same as SetElement and PropConstraints
         // once the value is set, tell its peers
@@ -53,7 +65,7 @@ class ProblemStateBase {
         bool UpdatePossibilities(Element val);
 
         // we don't want to send subsciber_idx_ through the network
-        void ReconstructSubscriberIdx();
+        void ConstructSubscriberIdx();
 
         Element val_;
         size_t x_idx_;
@@ -70,8 +82,9 @@ class ProblemStateBase {
         // faster access than bitset
         bool constraints_[N_NUM]; 
 
-        // use observer pattern to distribute update information
+        // use observer design pattern to broadcast update information
         // the list support O(1) time lookup, deletion, insertion
+        // similar to hashmap but with O(1) worst case lookup and a fixed memory usage, easier to serialize
         ElementListNode *head_;
         ElementListNode *tail_;
         ElementListNode subscriber_list_[N_PEERS];
@@ -90,25 +103,42 @@ class ProblemStateBase {
 public:
 
     ProblemStateBase(Solvable *problem);
+    // deep copy constructor
     ProblemStateBase(Solvable &other);
 
+    // copy-and-swap
     ProblemStateBase& operator=(const ProblemStateBase& other);
-    // helper for using copy constructor for assignment
-    friend void swap(ProblemStateBase &first, ProblemStateBase &second);
+
+    // helper for copy-and-swap idom
+    friend void swap(ProblemStateBase &first, ProblemStateBase &second) {
+        // enable ADL
+        using std::swap;
+        swap(first.ele_arr_, second.ele_arr_);
+        swap(first.valid_, second.valid_);
+        swap(first.ele_list_, second.ele_list_);
+        swap(first.head_, second.head_);
+        swap(first.tail_, second.tail_);
+    };
 
     bool CheckValid() { return valid_; };
 
-    virtual ~ProblemStateBase();  // possible inheritance
-
+    // worst case O(N ^ 2) to prop constraints but get smaller near the end
     bool Set(size_t y_idx, size_t x_idx, Element val);
 
-    
+    // returns num possibility and indices
+    // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation
+    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const; 
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
-    ElementState ele_arr_[N_GRID];
+
+    ElementState ele_arr_[N_GRID];    
     bool valid_;
 
+    // list for unset elements
+    ElementListNode ele_list_[N_GRID];
+    ElementListNode *head_;
+    ElementListNode *tail_;
 };
 
 
