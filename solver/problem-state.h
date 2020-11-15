@@ -40,9 +40,9 @@ class ProblemStateBase {
     };
 
     // private list helper
-    static void InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *const insert);
+    static void InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *insert);
 
-    static void RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *const remove);
+    static void RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *remove);
  
     struct ElementState {
 
@@ -96,7 +96,7 @@ class ProblemStateBase {
         
         // for finding the idx of a particular subsciber in subscriber_list_ in O(1) time
         // used as a unordered_map but probably faster
-        // very expensive to send the array over the network cause it takes O(N^2) size
+        // very expensive to send the array over the network cause it takes O(N^2) space
         // but construting it only takes O(N) (O(N^2) if taking into acount of initialization)
         size_t subscriber_idx_[N_GRID];
         
@@ -109,7 +109,7 @@ public:
 
     ProblemStateBase(Solvable *problem);
     // deep copy constructor
-    ProblemStateBase(Solvable &other);
+    ProblemStateBase(ProblemStateBase &other);
 
     // copy-and-swap
     ProblemStateBase& operator=(const ProblemStateBase& other);
@@ -137,7 +137,7 @@ public:
 
     // prune criteria 2
     // all other peers force the current element to take a certain value
-    bool GetIdxFxiedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
+    bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
