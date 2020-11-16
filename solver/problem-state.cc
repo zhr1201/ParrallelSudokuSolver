@@ -170,6 +170,25 @@ bool ProblemStateBase::ElementState::UpdatePossibilities(Element val) {
     return true;
 }
 
+void ProblemStateBase::ElementState::SetFromAnother(const ElementState &other, u_longlong_t offset) {
+    // dangerous but fast
+    val_ = other.val_;
+    x_idx_ = other.x_idx_;
+    y_idx_ = other.y_idx_;
+    n_possibilities_ = other.n_possibilities_;
+    memcpy(peer_possibilities_array_, other.peer_possibilities_array_, sizeof(size_t) * N_NUM);
+    val_fix_ = other.val_fix_;
+    memcpy(constraints_, other.constraints_, sizeof(bool) * N_NUM);
+    CopyPointer(head_, other.head_, offset);
+    CopyPointer(tail_, other.tail_, offset);
+    for (size_t i = 0; i < N_PEERS; ++i) {
+        CopyPointer(subscriber_list_[i].state_, other.subscriber_list_[i].state_, offset);
+        CopyPointer(subscriber_list_[i].prev_, other.subscriber_list_[i].prev_, offset);
+        CopyPointer(subscriber_list_[i].next_, other.subscriber_list_[i].next_, offset);
+    }
+    memcpy(subscriber_idx_, other.subscriber_idx_, sizeof(size_t) * N_GRID);
+}
+
 
 // an expensive setup O(N ^ 3), but reduce repeatedly computing active peers later
 ProblemStateBase::ProblemStateBase(Solvable *problem) :
@@ -202,6 +221,31 @@ ProblemStateBase::ProblemStateBase(Solvable *problem) :
             }
         }
     }        
+}
+
+
+ProblemStateBase::ProblemStateBase(const ProblemStateBase &other) :
+        valid_(other.valid_) {
+    // adding the offset to pointers
+    // extreamly dangeraous but blazingly fast
+
+    SUDOKU_ASSERT(this < &other);  // new vars on stack always has a lower address
+    u_longlong_t offset = (u_longlong_t)&other - (u_longlong_t)this;
+    CopyPointer(head_, other.head_, offset);
+    CopyPointer(tail_, other.tail_, offset);
+    for (size_t i = 0; i < N_GRID; ++i) {
+        CopyPointer(ele_list_[i].next_, other.ele_list_[i].next_, offset);
+        CopyPointer(ele_list_[i].prev_, other.ele_list_[i].prev_, offset); 
+        CopyPointer(ele_list_[i].state_, other.ele_list_[i].state_, offset);
+        
+        ele_arr_[i].SetFromAnother(other.ele_arr_[i], offset);
+    }
+
+}
+
+ProblemStateBase& ProblemStateBase::operator=(ProblemStateBase &other) {
+    swap(*this, other);
+    return *this;
 }
 
 void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
@@ -272,6 +316,7 @@ bool ProblemStateBase::GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element 
             val = cur->state_->val_fix_;
             return true;
         }
+        cur = cur->next_;
     }
     return false;
 }

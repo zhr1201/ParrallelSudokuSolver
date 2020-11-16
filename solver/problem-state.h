@@ -30,6 +30,8 @@ namespace sudoku {
 
 class ProblemStateBase {
 
+    // private helper function and data structures
+
     struct ElementState;
 
     struct ElementListNode {
@@ -43,6 +45,16 @@ class ProblemStateBase {
     static void InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *insert);
 
     static void RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *remove);
+
+    // set dst with an offset + src
+    template <typename T>
+    static void CopyPointer(T *&dst, void *src, u_longlong_t offset) {
+        if (src == nullptr) {
+            dst = nullptr;
+            return;
+        }
+        dst = (T*)((u_longlong_t)src - (u_longlong_t)offset);
+    }
  
     struct ElementState {
 
@@ -68,6 +80,9 @@ class ProblemStateBase {
 
         // we don't want to send subsciber_idx_ through the network
         void ConstructSubscriberIdx();
+
+        // set value from another instance, should only get called by the copy constructor of ProblemState
+        void SetFromAnother(const ElementState &other, u_longlong_t offset);
 
         Element val_;
         size_t x_idx_;
@@ -105,14 +120,16 @@ class ProblemStateBase {
     };
 
 
-public:
+public:    
+    // start of ProblemStateBase def 
 
     ProblemStateBase(Solvable *problem);
+
     // deep copy constructor
-    ProblemStateBase(ProblemStateBase &other);
+    ProblemStateBase(const ProblemStateBase &other);
 
     // copy-and-swap
-    ProblemStateBase& operator=(const ProblemStateBase& other);
+    ProblemStateBase& operator=(ProblemStateBase& other);
 
     // helper for copy-and-swap idom
     friend void swap(ProblemStateBase &first, ProblemStateBase &second) {
@@ -126,6 +143,8 @@ public:
     };
 
     bool CheckValid() { return valid_; };
+
+    bool CheckSolved() { return valid_ && (!head_); };
 
     // worst case O(N ^ 2) to prop constraints but get smaller near the end
     bool Set(size_t y_idx, size_t x_idx, Element val);

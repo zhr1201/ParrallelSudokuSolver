@@ -35,6 +35,10 @@
 #define posix_memfree(pmemptr) (free(pmemptr))
 #endif
 
+#ifndef u_longlong_t
+typedef unsigned long long u_longlong_t;
+#endif
+
 
 // Gloabl macros
 #define UNFILLED 0

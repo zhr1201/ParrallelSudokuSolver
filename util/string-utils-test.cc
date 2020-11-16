@@ -17,5 +17,5 @@ void TestSplitStr() {
 int main() {
     using namespace sudoku;
     TestSplitStr();
-    std::cout << "String util test PASS" << std::endl;
+    return 0;
 }
