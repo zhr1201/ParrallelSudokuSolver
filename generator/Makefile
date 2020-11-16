@@ -1,14 +1,14 @@
 all:
-
+	gcc generator.cc -o generator.o
 
 include ../sudoku.mk
 
-TESTFILES = generator-test
+#TESTFILES = generator-test
 
-OBJFILES = file-parser.o generator.o sudoku-problem.o
+#OBJFILES = file-parser.o generator.o sudoku-problem.o
 
-LIBNAME = sudoku-generator
+#LIBNAME = sudoku-generator
 
-ADDLIBS = 
+#ADDLIBS =
 
 include ../makefiles/default_rules.mk
