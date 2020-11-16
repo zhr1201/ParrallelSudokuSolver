@@ -15,8 +15,7 @@ EXTLIBLDFLAGS =
 
 CXXFLAGS = -std=c++11 -I.. -I$(EXTLIBINC) -O0 $(EXTRA_CXXFLAGS) \
            -Wall -Wno-sign-compare -Wno-unused-local-typedefs \
-           -Wno-deprecated-declarations -Winit-self \
-           -g
+           -Wno-deprecated-declarations -Winit-self -g
 
 # Compiler specific flags
 COMPILER = $(shell $(CXX) -v 2>&1)

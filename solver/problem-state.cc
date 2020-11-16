@@ -17,20 +17,26 @@ inline size_t ProblemStateBase::ElementState::GetIdxInSubList(size_t y_idx, size
 }
 
 void ProblemStateBase::InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *insert) {
+    SUDOKU_ASSERT(insert);
     if (head == nullptr) {
         head = insert;
         tail = insert;
         return;
     }
 
+    SUDOKU_ASSERT(tail);
     tail->next_ = insert;
     insert->prev_ = tail;
     tail = tail->next_;
 }
 
 void ProblemStateBase::RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *remove) {
+    SUDOKU_ASSERT(remove);
     ElementListNode *prev = remove->prev_;
     ElementListNode *next = remove->next_;
+    remove->next_ = nullptr;
+    remove->state_ = nullptr;
+    remove->prev_ = nullptr;
 
     if (prev != nullptr && next != nullptr) {
         prev->next_ = next;
@@ -38,16 +44,26 @@ void ProblemStateBase::RemoveFromList(ElementListNode *&head, ElementListNode *&
         return;
     }
 
+    if (prev == nullptr && next == nullptr) {
+        SUDOKU_ASSERT(remove == head);
+        SUDOKU_ASSERT(remove == tail);
+        head = nullptr;
+        tail = nullptr;
+        return;
+    }
+
     if (prev == nullptr) {
         SUDOKU_ASSERT(remove == head);
         head = next;
         head->prev_ = nullptr;
+        return;
     }
 
     if (next == nullptr) {
         SUDOKU_ASSERT(remove == tail);
         tail = prev;
         tail->next_ = nullptr;
+        return;
     }
 
 }
@@ -89,14 +105,11 @@ void ProblemStateBase::ElementState::Subscribe(ElementState* state) {
 }
 
 void ProblemStateBase::ElementState::UnSubscribe(ElementState *state) {
+    SUDOKU_ASSERT(this != state);
     size_t idx = GetIdxInSubList(state->y_idx_, state->x_idx_);
-    std::cout << "Unsub " << state->y_idx_ << " " << state->x_idx_ << " from " << y_idx_ << " " << x_idx_ << std::endl;
     ElementListNode *tmp = &subscriber_list_[idx];
     SUDOKU_ASSERT(tmp != nullptr);
-    // RemoveFromList(head_, tail_, tmp);
-    // tmp->prev_ = nullptr;
-    // tmp->next_ = nullptr;
-    // tmp->state_ = nullptr;
+    RemoveFromList(head_, tail_, tmp);
     return;
 }
 
@@ -133,7 +146,8 @@ bool ProblemStateBase::ElementState::NotifySubscriberPossibilities(Element val) 
 
 bool ProblemStateBase::ElementState::UpdateConstraints(Element val) {
     if (!constraints_[val]) {
-        SUDOKU_ASSERT(n_possibilities_ != 0);
+        constraints_[val] = true;
+        SUDOKU_ASSERT(n_possibilities_ > 0);
         if (--n_possibilities_ == 0) {
             return false;
         }
@@ -143,7 +157,6 @@ bool ProblemStateBase::ElementState::UpdateConstraints(Element val) {
             return false;
         }
     } else {
-        constraints_[val] = true;
         return true;
     }
 }
@@ -160,7 +173,7 @@ bool ProblemStateBase::ElementState::UpdatePossibilities(Element val) {
 
 // an expensive setup O(N ^ 3), but reduce repeatedly computing active peers later
 ProblemStateBase::ProblemStateBase(Solvable *problem) :
-        valid_(true) {  
+         ele_arr_(), valid_(true), ele_list_(), head_(nullptr), tail_(nullptr) {  
     
     for (size_t i = 0; i < SIZE; ++i) {
         for (size_t j = 0; j < SIZE; ++j) {
@@ -169,6 +182,7 @@ ProblemStateBase::ProblemStateBase(Solvable *problem) :
             ele_arr_[offset].y_idx_ = i;
             ele_arr_[offset].x_idx_ = j;
             InsertIntoList(head_, tail_, ele_list_ + offset);
+            ele_arr_[offset].ConstructSubscriberIdx();
         }
     };
 
@@ -195,18 +209,14 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
     size_t blk_y_start = y_idx / SUB_SIZE * SUB_SIZE;
     size_t blk_x_start = x_idx / SUB_SIZE * SUB_SIZE;
     
-    size_t idx_counter = 0;
-
     for (size_t i = 0; i < SIZE; ++i) {
         if (i != x_idx) {
-            cur->subscriber_idx_[Idx2Offset(y_idx, i)] = idx_counter++;
             cur->Subscribe(&ele_arr_[Idx2Offset(y_idx, i)]);
         }
     }
 
     for (size_t i = 0; i < SIZE; ++i) {
         if (i != y_idx) {
-            cur->subscriber_idx_[Idx2Offset(i, x_idx)] = idx_counter++;
             cur->Subscribe(&ele_arr_[Idx2Offset(i, x_idx)]);
         }
     }
@@ -214,7 +224,6 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
     for (size_t i = blk_y_start; i < blk_y_start + SUB_SIZE; ++i) {
         for (size_t j = blk_x_start; j < blk_x_start + SUB_SIZE; ++j) {
             if (i != y_idx && j != x_idx) {
-                cur->subscriber_idx_[Idx2Offset(i, j)] = idx_counter++;
                 cur->Subscribe(&ele_arr_[Idx2Offset(i, j)]);
             }
         }
@@ -222,21 +231,15 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
 }
 
 bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
-    std::cout << y_idx << " " << x_idx << " " << val << std::endl;
     ElementState node = ele_arr_[Idx2Offset(y_idx, x_idx)];
     SUDOKU_ASSERT(node.val_ == UNFILLED);
 
     if (node.constraints_[val]) {
-        std::cout << "Constaint violation" << std::endl;
         return false;
-    }
-    if (y_idx == 8 && x_idx == 5) {
-        std::cout << "Break" << std::endl;
     }
 
     node.val_ = val;
     node.UnSubcribeAllForCur();
-    std::cout << "Remove from active list" << std::endl;
     RemoveFromList(head_, tail_, &ele_list_[Idx2Offset(y_idx, x_idx)]);
     return node.NotifySubscriberConstraints();
 }

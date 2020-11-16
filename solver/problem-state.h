@@ -47,8 +47,8 @@ class ProblemStateBase {
     struct ElementState {
 
         ElementState() :
-                val_(UNFILLED), n_possibilities_(N_NUM - 1), val_fix_(UNFILLED), 
-                head_(nullptr), tail_(nullptr) {
+                val_(UNFILLED), n_possibilities_(N_NUM - 1), val_fix_(UNFILLED),
+                constraints_(), head_(nullptr), tail_(nullptr), subscriber_list_(), subscriber_idx_() {
             std::fill(peer_possibilities_array_, peer_possibilities_array_ + N_NUM, N_PEERS);
         }
 

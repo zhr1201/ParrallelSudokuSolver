@@ -1,4 +1,5 @@
 #include <vector>
+#include "util/timer.h"
 #include "util/global.h"
 #include "solver/problem-state.h"
 #include "util/string-utils.h"
@@ -34,20 +35,39 @@ private:
 };
 
 void TestProblemStateSolved() {
-    // can't pass need to be fixed
-    // const std::string in_csv = "test-data-1.csv";
-    // TestSudoku ts;
-    // ts.ReadFromCSV(in_csv);
-    // ProblemStateBase ps(&ts);
-    // assert(ps.CheckValid());
+    const std::string in_csv = "test-data-1.csv";
+    TestSudoku ts;
+    ts.ReadFromCSV(in_csv);
+    Timer tm;
+    ProblemStateBase ps(&ts);
+    std::cout << "Takes " << tm.Elapsed() << " to set up a solved sudoku" << std::endl;
+    assert(ps.CheckValid());
 }
 
 void TestProblemFixedByConstrant() {
-
+    const std::string in_csv = "test-data-2.csv";
+    TestSudoku ts;
+    ts.ReadFromCSV(in_csv);
+    ProblemStateBase ps(&ts);
+    size_t x_idx, y_idx;
+    size_t n_pos = ps.GetIdxWithMinPossibility(x_idx, y_idx);
+    assert(n_pos == 1);
+    assert(x_idx == 0);
+    assert(y_idx == 0);
 }
 
 void TestProblemFixedByPeers() {
-
+    const std::string in_csv = "test-data-3.csv";
+    TestSudoku ts;
+    ts.ReadFromCSV(in_csv);
+    ProblemStateBase ps(&ts);
+    size_t x_idx, y_idx;
+    Element val;
+    bool ret = ps.GetIdxFixedByPeers(x_idx, y_idx, val);
+    assert(ret);
+    assert(val == 3);
+    assert(x_idx == 0);
+    assert(y_idx == 0); 
 }
 
 }
