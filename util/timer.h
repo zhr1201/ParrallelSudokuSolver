@@ -1,5 +1,5 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef SUDOKU_UTIL_TIMER_H_
+#define SUDOKU_UTIL_TIMER_H_
 
 #include <sys/time.h>
 #include <unistd.h>

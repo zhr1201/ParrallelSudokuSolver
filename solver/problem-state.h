@@ -15,8 +15,8 @@
 //        we can serielize the list using the element index
 
 
-#ifndef __PROBLEM_INFO__
-#define __PROBLEM_INFO__
+#ifndef SUDOKU_SOLVER_PROBLEM_INFO_H_
+#define SUDOKU_SOLVER_PROBLEM_INFO_H_
 
 #include <queue>
 #include <stack>

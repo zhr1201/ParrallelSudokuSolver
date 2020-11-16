@@ -1,5 +1,5 @@
-#ifndef __SINGLETON_H__
-#define __SINGLETON_H__
+#ifndef SUDOKU_UTIL_SINGLETON_H_
+#define SUDUKU_UTIL_SINGLETON_H_
 
 #include <util/global.h>
 

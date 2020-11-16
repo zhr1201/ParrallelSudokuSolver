@@ -1,5 +1,5 @@
-#ifndef _GLOBAL_H_
-#define _GLOBAL_H_
+#ifndef SUDOKU_UTIL_GLOBAL_H_
+#define SUDOKU_UTIL_GLOBAL_H_
 
 
 #include <cstdio>
