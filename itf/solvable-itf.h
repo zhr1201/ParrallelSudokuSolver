@@ -1,7 +1,7 @@
 #ifndef SOLVABLE_ITF_H
 #define SOLVABLE_ITF_H
 
-#include <util/global.h>
+#include "../util/global.h"
 
 namespace sudoku {
 

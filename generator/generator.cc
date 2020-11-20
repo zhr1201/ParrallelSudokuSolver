@@ -1,3 +1,5 @@
+// Generate random Sudoku array
+
 #include "generator.h"
 #include <fstream>
 #include <iostream>
@@ -94,13 +96,23 @@ void generator::createRandomSudoku() {
                 }
             }
         }
-        //flip diagonal
-        flipCount = rand()%2;
+        //flip by three rows / columns
+        flipCount = rand()%3;
         while(flipCount > 0) {
             flipCount --;
-            for (int i=0;i<9;i++) {
+            for (int i=0;i<3;i++) {
                 for (int j=0;j<9;j++) {
-                    newArr[8 - i][8 - j] = sudokuArr[i][j];
+                    newArr[(i+1)%3][j] = sudokuArr[i][j];
+                }
+            }
+            for (int i=3;i<6;i++) {
+                for (int j=0;j<9;j++) {
+                    newArr[(i+1)%3+3][j] = sudokuArr[i][j];
+                }
+            }
+            for (int i=6;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    newArr[(i+1)%3+6][j] = sudokuArr[i][j];
                 }
             }
             for (int i=0;i<9;i++) {
@@ -109,12 +121,22 @@ void generator::createRandomSudoku() {
                 }
             }
         }
-        flipCount = rand()%2;
+        flipCount = rand()%3;
         while(flipCount > 0) {
             flipCount --;
             for (int i=0;i<9;i++) {
-                for (int j=0;j<9;j++) {
-                    newArr[8 - j][8 - i] = sudokuArr[i][j];
+                for (int j=0;j<3;j++) {
+                    newArr[i][(j+1)%3] = sudokuArr[i][j];
+                }
+            }
+            for (int i=3;i<9;i++) {
+                for (int j=3;j<6;j++) {
+                    newArr[i][(j+1)%3 + 3] = sudokuArr[i][j];
+                }
+            }
+            for (int i=6;i<9;i++) {
+                for (int j=6;j<9;j++) {
+                    newArr[i][(j+1)%3 + 6] = sudokuArr[i][j];
                 }
             }
             for (int i=0;i<9;i++) {
@@ -123,6 +145,7 @@ void generator::createRandomSudoku() {
                 }
             }
         }
+
     }
 
 }

@@ -1,8 +1,18 @@
-all:
-	g++ generator.cc generator-test.cc -o generator
+all: generatorProgram parserProgram
 
-clean:
+generatorProgram:
+	g++ -std=c++11 generator.cc generator-test.cc -o generator
+
+parserProgram:
+	g++ -std=c++11 file-parser.cc file-parser-test.cc -o file-parser
+
+clean: rmGenerator rmParser
+
+rmGenerator:
 	rm -f generator
+
+rmParser:
+	rm -f file-parser
 
 #include ../sudoku.mk
 

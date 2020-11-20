@@ -49,7 +49,7 @@
 
 // Global alias
 using Element = size_t;
-using SudokuMat = std::vector<std::vector<Element>>;
+using SudokuMat = std::vector<std::vector<Element> >;
 
 
 #endif // _GLOBAL_H_
