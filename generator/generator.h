@@ -4,7 +4,8 @@
 
 class generator {
     public:
-        static void createSudoku();
+        static void createSudoku(int difficulty);
+        static void createRandomSudoku();
 };
 
 #endif

@@ -1,7 +1,10 @@
 all:
-	gcc generator.cc -o generator.o
+	g++ generator.cc generator-test.cc -o generator
 
-include ../sudoku.mk
+clean:
+	rm -f generator
+
+#include ../sudoku.mk
 
 #TESTFILES = generator-test
 
@@ -11,4 +14,4 @@ include ../sudoku.mk
 
 #ADDLIBS =
 
-include ../makefiles/default_rules.mk
+#include ../makefiles/default_rules.mk

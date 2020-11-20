@@ -1,43 +1,30 @@
 #include "generator.h"
-#include <iostream>
 #include <fstream>
-#include <sstream>
+#include <iostream>
 #include <string>
 
-int main(int argc, char *argv[]) {
-    generator::createSudoku();
-}
 
-void generator::createSudoku() {
-    //Manually given a Sudoku array
-    int sudokuArr[9][9] = {{7,3,5,6,1,4,8,9,2},
-                           {8,4,2,9,7,3,5,6,1},
-                           (9,6,1,2,8,5,3,7,4),
-                           {2,8,6,3,4,9,1,5,7},
-                           {4,1,3,8,5,7,9,2,6},
-                           {5,7,9,1,2,6,4,3,8},
-                           {1,5,7,4,9,2,6,8,3},
-                           {6,9,4,7,3,8,2,1,5},
-                           {3,2,8,5,6,1,7,4,9}};
+
+int sudokuArr[9][9] = {{7, 3, 5, 6, 1, 4, 8, 9, 2},
+                       {8, 4, 2, 9, 7, 3, 5, 6, 1},
+                       {9, 6, 1, 2, 8, 5, 3, 7, 4},
+                       {2, 8, 6, 3, 4, 9, 1, 5, 7},
+                       {4, 1, 3, 8, 5, 7, 9, 2, 6},
+                       {5, 7, 9, 1, 2, 6, 4, 3, 8},
+                       {1, 5, 7, 4, 9, 2, 6, 8, 3},
+                       {6, 9, 4, 7, 3, 8, 2, 1, 5},
+                       {3, 2, 8, 5, 6, 1, 7, 4, 9}};
+
+
+//Generate Sudoku Array and write to a .csv file
+void generator::createSudoku(int difficulty) {
+
+    //create random Sudoku array by rotate and flip the given array
+    createRandomSudoku();
 
     //Given three difficulty levels
-    //TODO: This will be replaced by an input argument
-    int difficulty = 0;
-    int itemToBeSolved;
-    switch(difficulty) {
-        case 0 :
-            itemToBeSolved = 20;
-            break;
-        case 1:
-            itemToBeSolved = 30;
-            break;
-        case 2:
-            itemToBeSolved = 40;
-            break;
-        default:
-            itemToBeSolved = 20;
-            break;
-    }
+    int itemToBeSolved = difficulty;
+    printf("Number of Item to be Filled Out: %d\n", difficulty);
 
     //replace the number by 0
     while(itemToBeSolved > 0) {
@@ -51,21 +38,91 @@ void generator::createSudoku() {
 
 
     //write output file
-    std::string problemFile = "sudokuDemo.csv";
-    std::ofstream problemfile;
-    problemfile.open(problemFile);
+    std::ofstream sudokuFile("sudokuDemo.csv");
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
-            std::ostringstream out;
-            out << sudokuArr[i][j];
             if (j < 8) {
-                problemfile << out.str() << ",";
+                sudokuFile << sudokuArr[i][j];
+                sudokuFile << ",";
             }
             else if (j == 8) {
-                problemfile << out.str() << "\r\n";
+                sudokuFile << sudokuArr[i][j];
+                sudokuFile << "\r\n";
             }
         }
     }
+    sudokuFile.close();
 
+}
+
+
+
+//Rotate / flip the array to create new Sudoku array
+//Do all of the operations 10 times (with random times of operation each)
+void generator::createRandomSudoku() {
+    int operTemp = 10;
+    while(operTemp > 0) {
+        operTemp --;
+        int newArr[9][9];
+        //rotate
+        int rotateCount = rand()%4;
+        while(rotateCount > 0) {
+            rotateCount --;
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    newArr[j][8 - i] = sudokuArr[i][j];
+                }
+            }
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    sudokuArr[i][j] = newArr[i][j];
+                }
+            }
+        }
+        //flip
+        int flipCount = rand()%2;
+        while(flipCount > 0) {
+            flipCount --;
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    newArr[i][8 - j] = sudokuArr[i][j];
+                }
+            }
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    sudokuArr[i][j] = newArr[i][j];
+                }
+            }
+        }
+        //flip diagonal
+        flipCount = rand()%2;
+        while(flipCount > 0) {
+            flipCount --;
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    newArr[8 - i][8 - j] = sudokuArr[i][j];
+                }
+            }
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    sudokuArr[i][j] = newArr[i][j];
+                }
+            }
+        }
+        flipCount = rand()%2;
+        while(flipCount > 0) {
+            flipCount --;
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    newArr[8 - j][8 - i] = sudokuArr[i][j];
+                }
+            }
+            for (int i=0;i<9;i++) {
+                for (int j=0;j<9;j++) {
+                    sudokuArr[i][j] = newArr[i][j];
+                }
+            }
+        }
+    }
 
 }
