@@ -13,7 +13,7 @@ bool SolverSerial::SolverInternal(ProblemStateBase &problem_state) {
         Trial ret = stack_.Pop();
         SUDOKU_ASSERT(ret.val_ != UNFILLED);
         if (trial_suc) {
-            problem_state.SanitiCheck();
+            // problem_state.SanitiCheck();
             TakeSnapshot(ret.y_idx_, ret.x_idx_, problem_state);
         }
 
@@ -49,6 +49,7 @@ void SolverSerial::PushChildren(const ProblemStateBase &problem_state) {
     
     if (ret) {
         Trial tmp = {x_idx, y_idx, val};
+        std::cout << "Fixed by peers" << std::endl;
         stack_.Push(tmp);
     } else {
         size_t n_poss = problem_state.GetIdxWithMinPossibility(y_idx, x_idx);

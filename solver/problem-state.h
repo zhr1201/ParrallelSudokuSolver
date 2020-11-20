@@ -1,7 +1,7 @@
 // sovler/problem-state.h (author: Haoran Zhou)
 
 // Class for maintining the current problem solving state and provide prunning info
-// the logic of prunning and searching is not implemented outside this class
+// the logic of prunning and searching should be implemented outside this class
 // this could lead to a slightly worse performance but better software architecture
 
 // !!!IMPORTANT!!!: use stack for alloc the memory because performance is the top priority
