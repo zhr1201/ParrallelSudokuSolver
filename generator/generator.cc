@@ -23,16 +23,16 @@ void generator::createSudoku(int difficulty) {
     createRandomSudoku();
 
     //Given three difficulty levels
-    int itemToBeSolved = difficulty;
-    printf("Number of Item to be Filled Out: %d\n", difficulty);
+    int elementToBeSolved = difficulty;
+    printf("Number of elements to be Filled Out: %d\n", difficulty);
 
     //replace the number by 0
-    while(itemToBeSolved > 0) {
+    while(elementToBeSolved > 0) {
         int col = rand()%9;
         int row = rand()%9;
         if (sudokuArr[col][row]!= 0) {
             sudokuArr[col][row] = 0;
-            itemToBeSolved --;
+            elementToBeSolved --;
         }
     }
 
