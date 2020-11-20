@@ -13,10 +13,9 @@ EXTLIBLDFLAGS =
 
 # Darwin (macOS) configuration
 
-CXXFLAGS = -std=c++11 -I.. -I$(EXTLIBINC) -O1 $(EXTRA_CXXFLAGS) \
+CXXFLAGS = -std=c++11 -I.. -I$(EXTLIBINC) -O0 $(EXTRA_CXXFLAGS) \
            -Wall -Wno-sign-compare -Wno-unused-local-typedefs \
-           -Wno-deprecated-declarations -Winit-self \
-           -g # -O0 -DSUDOKU_PARANOID
+           -Wno-deprecated-declarations -Winit-self -g
 
 # Compiler specific flags
 COMPILER = $(shell $(CXX) -v 2>&1)
