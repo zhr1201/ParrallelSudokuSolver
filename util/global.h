@@ -50,6 +50,9 @@ typedef unsigned long long u_longlong_t;
 #define N_NUM 10
 #define N_PEERS 20
 
+// macro functions
+#define IDX2OFFSET(Y, X)  (Y * SIZE + X)
+
 
 // Global alias
 using Element = size_t;

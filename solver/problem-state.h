@@ -23,6 +23,7 @@
 
 #include "util/global.h"
 #include "itf/solvable-itf.h"
+#include "util/list-utils.h"
 
 
 namespace sudoku {
@@ -33,27 +34,24 @@ class ProblemStateBase {
     // private helper function and data structures
 
     struct ElementState;
+    using ElementListNode = ListNode<ElementState>;
 
-    struct ElementListNode {
-        ElementListNode() : state_(nullptr), next_(nullptr), prev_(nullptr) {};
-        ElementState* state_;
-        ElementListNode* next_;
-        ElementListNode* prev_;
-    };
-
-    // private list helper
-    static void InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *insert);
-
-    static void RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *remove);
-
-    // set dst with an offset + src
+    // set dst with an offset + src, T could be ElementListNode or ElementState here
     template <typename T>
-    static void CopyPointer(T *&dst, void *src, u_longlong_t offset) {
+    static void CopyPointer(T *&dst, void *src, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit) {
         if (src == nullptr) {
             dst = nullptr;
             return;
         }
-        dst = (T*)((u_longlong_t)src - (u_longlong_t)offset);
+        u_longlong_t tmp;
+        if (add) {
+            tmp = (u_longlong_t)src + (u_longlong_t)offset;
+        } else {
+            tmp = (u_longlong_t)src - (u_longlong_t)offset;
+        }
+
+        SUDOKU_ASSERT(base <= tmp && tmp < limit);
+        dst = (T*)tmp;
     }
  
     struct ElementState {
@@ -82,7 +80,7 @@ class ProblemStateBase {
         void ConstructSubscriberIdx();
 
         // set value from another instance, should only get called by the copy constructor of ProblemState
-        void SetFromAnother(const ElementState &other, u_longlong_t offset);
+        void SetFromAnother(const ElementState &other, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit);
 
         Element val_;
         size_t x_idx_;
@@ -117,49 +115,63 @@ class ProblemStateBase {
         
     private:
         inline size_t GetIdxInSubList(size_t y_idx, size_t x_idx);
+        DISALLOW_CLASS_COPY_AND_ASSIGN(ElementState);
     };
 
 
 public:    
     // start of ProblemStateBase def 
+    ProblemStateBase() {};
 
-    ProblemStateBase(Solvable *problem);
+    ProblemStateBase(const Solvable *problem);
 
     // deep copy constructor
     ProblemStateBase(const ProblemStateBase &other);
 
-    // copy-and-swap
-    ProblemStateBase& operator=(ProblemStateBase& other);
+    // can't use copy-and-swap idom here cause the pointers variable is not on heap
+    // and is pointing to some address within the data structure
+    ProblemStateBase& operator=(const ProblemStateBase& other);
 
-    // helper for copy-and-swap idom
-    friend void swap(ProblemStateBase &first, ProblemStateBase &second) {
-        // enable ADL
-        using std::swap;
-        swap(first.ele_arr_, second.ele_arr_);
-        swap(first.valid_, second.valid_);
-        swap(first.ele_list_, second.ele_list_);
-        swap(first.head_, second.head_);
-        swap(first.tail_, second.tail_);
-    };
+    // TODO: refac to one state check call
+    bool CheckValid() const { return valid_; };
 
-    bool CheckValid() { return valid_; };
-
-    bool CheckSolved() { return valid_ && (!head_); };
+    bool CheckSolved() const { return valid_ && (!head_); };
 
     // worst case O(N ^ 2) to prop constraints but get smaller near the end
     bool Set(size_t y_idx, size_t x_idx, Element val);
 
+    Element Get(size_t y_idx, size_t x_idx) const { return ele_arr_[IDX2OFFSET(y_idx, x_idx)].val_; };
+
     // prune criteria 1
     // returns num possibility and indices
     // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation and N is only 9
-    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const; 
+    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const;
 
     // prune criteria 2
     // all other peers force the current element to take a certain value
     bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
 
+    size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret) const;
+
+    void SanitiCheck() {
+        ElementListNode *cur = head_;
+        while (cur != tail_) {
+            SUDOKU_ASSERT(cur->state_);
+            cur = cur->next_;
+        }
+
+        for (size_t i = 0; i < N_GRID; ++i) {
+            if (ele_list_[i].state_ == nullptr) {
+                SUDOKU_ASSERT(ele_arr_[i].val_ != UNFILLED);
+            } else {
+                SUDOKU_ASSERT(ele_arr_[i].val_ == UNFILLED);
+            }
+        }
+    }
+
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
+    void SetFromAnother(const ProblemStateBase &other);
 
     ElementState ele_arr_[N_GRID];    
     bool valid_;
