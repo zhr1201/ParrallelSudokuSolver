@@ -120,7 +120,7 @@ void ProblemStateBase::ElementState::SetFromAnother(const ElementState &other, u
     // dangerous but fast
 
     SUDOKU_ASSERT((offset) == (add ? (u_longlong_t)this - (u_longlong_t)&other : (u_longlong_t)&other - (u_longlong_t)this));
-     val_ = other.val_;
+    val_ = other.val_;
     x_idx_ = other.x_idx_;
     y_idx_ = other.y_idx_;
     n_possibilities_ = other.n_possibilities_;
@@ -136,6 +136,16 @@ void ProblemStateBase::ElementState::SetFromAnother(const ElementState &other, u
         CopyPointer(subscriber_list_[i].next_, other.subscriber_list_[i].next_, offset, add, base, limit);
     }
     memcpy(subscriber_idx_, other.subscriber_idx_, sizeof(size_t) * N_GRID);
+}
+
+bool ProblemStateBase::ElementState::NotifyTaken(Element val) {
+    for (size_t i = 1; i < N_NUM; ++i) {
+        if (i != val && !constraints_[i]) {
+            if (!NotifySubscriberPossibilities(i))
+                return false;
+        }
+    }
+    return true;
 }
 
 
@@ -237,7 +247,9 @@ bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
     if (node->constraints_[val]) {
         return false;
     }
+
     node->val_ = val;
+    // node->NotifyTaken(val);
     node->UnSubcribeAllForCur();
     RemoveFromList(head_, tail_, &ele_list_[IDX2OFFSET(y_idx, x_idx)]);
     return node->NotifySubscriberConstraints();

@@ -49,7 +49,6 @@ void SolverSerial::PushChildren(const ProblemStateBase &problem_state) {
     
     if (ret) {
         Trial tmp = {x_idx, y_idx, val};
-        std::cout << "Fixed by peers" << std::endl;
         stack_.Push(tmp);
     } else {
         size_t n_poss = problem_state.GetIdxWithMinPossibility(y_idx, x_idx);

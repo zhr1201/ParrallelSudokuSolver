@@ -78,7 +78,7 @@ class ProblemStateBase {
 
         // we don't want to send subsciber_idx_ through the network
         void ConstructSubscriberIdx();
-
+        bool NotifyTaken(Element val);
         // set value from another instance, should only get called by the copy constructor of ProblemState
         void SetFromAnother(const ElementState &other, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit);
 

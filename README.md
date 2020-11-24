@@ -2,6 +2,8 @@
 
 CMSC818X High Performance Computing final project @UMD
 
+To run any exectutable or test, we need to change the default stack limit using ulimit -s 65532
+
 ## Build
 make depend
 

@@ -188,6 +188,14 @@ void TestProblemStateCopyConstructer() {
     std::cout << "Take " << tm.Elapsed() << " to finish copy constructor" << std::endl;
     assert(!ps_copy.CheckSolved());
     ps_copy.Set(8, 7, 7);
+
+    size_t y_idx, x_idx;
+    Element ele;
+    assert(ps_copy.GetIdxFixedByPeers(y_idx, x_idx, ele));
+    assert(y_idx == 8);
+    assert(x_idx == 8);
+    assert(ele == 5);
+
     ps_copy.Set(8, 8, 5);
     assert(ps_copy.CheckSolved());
     assert(!ps.CheckSolved());
@@ -253,11 +261,11 @@ void TestSerialSolver2() {
 
 int main() {
     using namespace sudoku;
-    // TestProblemStateSolved();
-    // TestProblemStateFixedByConstrant();
-    // TestProblemStateFixedByPeers();
-    // TestProblemStateCopyConstructer();
-    // TestProblemStateAssignOps();
+    TestProblemStateSolved();
+    TestProblemStateFixedByConstrant();
+    TestProblemStateFixedByPeers();
+    TestProblemStateCopyConstructer();
+    TestProblemStateAssignOps();
     TestSerialSolver();
  
     TestSerialSolver2();
