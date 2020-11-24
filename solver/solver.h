@@ -31,6 +31,59 @@ private:
 };
 
 
+// record all trials and so that we can use stack to do backtracking
+struct Trial {
+    size_t x_idx_;
+    size_t y_idx_;
+    Element val_;
+};
+
+
+class TrialStack {
+    Trial trial_stack_[N_GRID * N_NUM];
+    // stack pointer
+    int sp_;
+public:
+    TrialStack() : trial_stack_(), sp_(-1) {};
+    Trial Top() {
+        SUDOKU_ASSERT(sp_ >= 0);
+        Trial ret;
+        ret = {trial_stack_[sp_].x_idx_, trial_stack_[sp_].y_idx_, trial_stack_[sp_].val_};
+        return ret;
+    }
+
+    Trial Pop() {
+        Trial ret = Top();
+        --sp_;
+        return ret;
+    };
+
+    // caller responsible for proving enough space
+    size_t PopManyWithOnePosition(Trial *ret_buffer) {
+        SUDOKU_ASSERT(sp_ >= 0);
+        Trial first = Pop();
+        ret_buffer[0] = first;
+        size_t ret_counter = 1;
+        while (sp_ != -1) {
+            if (trial_stack_[sp_].x_idx_ == first.x_idx_ && trial_stack_[sp_].y_idx_ == first.y_idx_) {
+                ret_counter++;
+                ret_buffer[ret_counter - 1] = trial_stack_[sp_]; 
+            }
+            else
+                break;
+        }
+        return ret_counter;
+    }
+
+    void Push(Trial trial) {
+        trial_stack_[++sp_] = trial;
+        SUDOKU_ASSERT(sp_ < N_GRID * N_NUM);
+    }
+
+    bool Emtpy() { return sp_ == -1; };
+};
+
+
 class SolverBase {
 
 public:
@@ -62,40 +115,6 @@ private:
 // no need to worry about copying/creating ProblemState since it is super fast
 
 class SolverSerial : public SolverBase {
-
-    // record all trials and so that we can use stack to do backtracking
-    struct Trial {
-        size_t x_idx_;
-        size_t y_idx_;
-        Element val_;
-    };
-
-    class TrialStack {
-        Trial trial_stack_[N_GRID * N_NUM];
-        // stack pointer
-        int sp_;
-    public:
-        TrialStack() : trial_stack_(), sp_(-1) {};
-        Trial Top() {
-            SUDOKU_ASSERT(sp_ >= 0);
-            Trial ret;
-            ret = {trial_stack_[sp_].x_idx_, trial_stack_[sp_].y_idx_, trial_stack_[sp_].val_};
-            return ret;
-        }
-    
-        Trial Pop() {
-            Trial ret = Top();
-            --sp_;
-            return ret;
-        };
-
-        void Push(Trial trial) {
-            trial_stack_[++sp_] = trial;
-            SUDOKU_ASSERT(sp_ < N_GRID * N_NUM);
-        }
-
-        bool Emtpy() { return sp_ == -1; };
-    };
 
     // a memory pool like data structure for snapshot
     struct ProblemStateMemPool {
