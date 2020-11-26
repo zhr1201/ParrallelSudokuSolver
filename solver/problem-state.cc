@@ -148,11 +148,33 @@ bool ProblemStateBase::ElementState::NotifyTaken(Element val) {
     return true;
 }
 
+void ProblemStateBase::ElementState::Clear() {
+    val_ = UNFILLED;
+    x_idx_ = 0;
+    y_idx_ = 0;
+    n_possibilities_ = N_NUM - 1;
+    std::fill(peer_possibilities_array_, peer_possibilities_array_ + N_NUM, N_PEERS);
+    val_fix_ = UNFILLED;
+    std::fill(constraints_, constraints_ + N_NUM, false);
+    head_ = nullptr;
+    tail_ = nullptr;
+    for (size_t i = 0; i < N_PEERS; ++i) {
+        subscriber_list_[i].prev_ = nullptr;
+        subscriber_list_[i].state_ = nullptr;
+        subscriber_list_[i].next_ = nullptr;
+    }
+    // no need to reset since its going to be the same
+    // std::fill(subscriber_idx_, subscriber_idx_ + N_GRID, 0);
+}
 
 // an expensive setup O(N ^ 3), but reduce repeatedly computing active peers later
 ProblemStateBase::ProblemStateBase(const Solvable *problem) :
          ele_arr_(), valid_(true), ele_list_(), head_(nullptr), tail_(nullptr) {  
-    
+    SetProblem(problem);
+}
+
+void ProblemStateBase::SetProblem(const Solvable *problem) {
+    Clear();
     for (size_t i = 0; i < SIZE; ++i) {
         for (size_t j = 0; j < SIZE; ++j) {
             size_t offset = IDX2OFFSET(i, j);
@@ -162,7 +184,7 @@ ProblemStateBase::ProblemStateBase(const Solvable *problem) :
             InsertIntoList(head_, tail_, ele_list_ + offset);
             ele_arr_[offset].ConstructSubscriberIdx();
         }
-    };
+    }
 
     for (size_t i = 0; i < SIZE; ++i) {
         for (size_t j = 0; j < SIZE; ++j) {
@@ -179,9 +201,23 @@ ProblemStateBase::ProblemStateBase(const Solvable *problem) :
                 }
             }
         }
-    }        
+    }      
 }
 
+void ProblemStateBase::Clear() {
+    valid_ = true;
+    head_ = nullptr;
+    tail_ = nullptr;
+    for (size_t i = 0; i < SIZE; ++i) {
+        for (size_t j = 0; j < SIZE; ++j) {
+            size_t offset = IDX2OFFSET(i, j);
+            ele_list_[offset].state_ = nullptr;
+            ele_list_[offset].prev_ = nullptr; 
+            ele_list_[offset].next_ = nullptr;
+            ele_arr_[offset].Clear();
+        }
+    }
+}
 
 ProblemStateBase::ProblemStateBase(const ProblemStateBase &other) {
     // adding the offset to pointers
@@ -189,7 +225,7 @@ ProblemStateBase::ProblemStateBase(const ProblemStateBase &other) {
     SetFromAnother(other);
 }
 
-// can't use copy-and-swap here (pointer pointing to release data on stack)
+// can't use copy-and-swap here
 ProblemStateBase& ProblemStateBase::operator=(const ProblemStateBase& other) {
     SetFromAnother(other);
     return *this;

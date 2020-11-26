@@ -226,11 +226,13 @@ void TestSerialSolver() {
     const std::string in_csv = "test-data-6.csv";
     TestSudoku ts;
     ts.ReadFromCSV(in_csv);
-    SolverSerial ss;
+    // we can use new here because the time of solving
+    // soduku doesn't include the time of calling the construtor
+    SolverSerial *ss = new SolverSerial();
     SudokuAnswer answer;
     
     Timer tm;
-    bool ret = ss.Solve(ts, answer);
+    bool ret = ss->Solve(ts, answer);
     std::cout << "Take " << tm.Elapsed() << " to solve" << std::endl;
 
     assert(ret);
@@ -244,11 +246,28 @@ void TestSerialSolver2() {
     const std::string in_csv = "test-data-7.csv";
     TestSudoku ts;
     ts.ReadFromCSV(in_csv);
-    SolverSerial ss;
+    SolverSerial *ss = new SolverSerial();
     SudokuAnswer answer;
     
     Timer tm;
-    bool ret = ss.Solve(ts, answer);
+    bool ret = ss->Solve(ts, answer);
+    std::cout << "Take " << tm.Elapsed() << " to solve" << std::endl;
+
+    assert(ret);
+
+    TestValidator val;
+    assert(val.Validate(&answer, &ts));
+}
+
+void TestSerialSolver3() {
+    const std::string in_csv = "test-data-8.csv";
+    TestSudoku ts;
+    ts.ReadFromCSV(in_csv);
+    SolverSerial *ss = new SolverSerial();
+    SudokuAnswer answer;
+    
+    Timer tm;
+    bool ret = ss->Solve(ts, answer);
     std::cout << "Take " << tm.Elapsed() << " to solve" << std::endl;
 
     assert(ret);
@@ -267,7 +286,9 @@ int main() {
     TestProblemStateCopyConstructer();
     TestProblemStateAssignOps();
     TestSerialSolver();
- 
+
     TestSerialSolver2();
+    TestSerialSolver3();
+
     return 0;
 }
