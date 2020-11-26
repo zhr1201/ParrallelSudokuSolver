@@ -4,9 +4,9 @@
 // the logic of prunning and searching should be implemented outside this class
 // this could lead to a slightly worse performance but better software architecture
 
-// !!!IMPORTANT!!!: use stack for alloc the memory because performance is the top priority
+// !!!IMPORTANT!!!: use static array for alloc the memory in the solving phase because performance is the top priority
 // Heap allocation is extreamly slow. Don't use STL containers that could potentional use the new operator or malloc
-// If dynamic heap memory allocation is neccesary, consider using a global memory pool
+// If dynamic heap memory allocation is neccesary, consider using a memory pool
 
 // TODO: declared as base since there could potentially be multiple serializaton implementations
 // possible serialization:
@@ -79,6 +79,7 @@ class ProblemStateBase {
         // we don't want to send subsciber_idx_ through the network
         void ConstructSubscriberIdx();
         bool NotifyTaken(Element val);
+        void Clear();
         // set value from another instance, should only get called by the copy constructor of ProblemState
         void SetFromAnother(const ElementState &other, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit);
 
@@ -128,7 +129,9 @@ public:
     // deep copy constructor
     ProblemStateBase(const ProblemStateBase &other);
 
-    // can't use copy-and-swap idom here cause the pointers variable is not on heap
+    void ResetProblem(const Solvable *problem);
+
+    // can't use copy-and-swap idom here cause the pointers variable is not allocated using new
     // and is pointing to some address within the data structure
     ProblemStateBase& operator=(const ProblemStateBase& other);
 
@@ -172,6 +175,8 @@ public:
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
     void SetFromAnother(const ProblemStateBase &other);
+    void Clear();
+    void SetProblem(const Solvable *problem);
 
     ElementState ele_arr_[N_GRID];    
     bool valid_;
