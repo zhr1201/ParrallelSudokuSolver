@@ -4,9 +4,9 @@
 namespace sudoku {
 
 
-bool SolverSerial::SolverInternal(ProblemStateBase &problem_state) {
+bool SolverSerial::SolverInternal() {
 
-    PushChildren(problem_state);
+    PushChildren();
     bool trial_suc = true;
 
     while (!stack_.Emtpy()) {
@@ -14,36 +14,36 @@ bool SolverSerial::SolverInternal(ProblemStateBase &problem_state) {
         SUDOKU_ASSERT(ret.val_ != UNFILLED);
         if (trial_suc) {
             // problem_state.SanitiCheck();
-            TakeSnapshot(ret.y_idx_, ret.x_idx_, problem_state);
+            TakeSnapshot(ret.y_idx_, ret.x_idx_);
         }
 
-        trial_suc = problem_state.Set(ret.y_idx_, ret.x_idx_, ret.val_);
+        trial_suc = ps_.Set(ret.y_idx_, ret.x_idx_, ret.val_);
 
         // problem solved
-        if (problem_state.CheckSolved()) {
+        if (ps_.CheckSolved()) {
             return true;
         }
         if (trial_suc) {
             // success, see if there are more things to fill
-            PushChildren(problem_state);
+            PushChildren();
         } else {
             // fail, backtrace
             if (!stack_.Emtpy()) {
                 ret = stack_.Top();
-                problem_state = ps_pool_.snapshot_arr_[ret.y_idx_][ret.x_idx_];
+                ps_ = ps_pool_.snapshot_arr_[ret.y_idx_][ret.x_idx_];
             }
         }
     }
 
-    return problem_state.CheckSolved();
+    return ps_.CheckSolved();
 }
 
-void SolverSerial::PushChildren(const ProblemStateBase &problem_state) {
+void SolverSerial::PushChildren() {
 
     size_t x_idx, y_idx;
     Element val;
-    bool ret = problem_state.GetIdxFixedByPeers(y_idx, x_idx, val);
-    if (!problem_state.CheckValid()) {
+    bool ret = ps_.GetIdxFixedByPeers(y_idx, x_idx, val);
+    if (!ps_.CheckValid()) {
         return;
     }
     
@@ -51,11 +51,11 @@ void SolverSerial::PushChildren(const ProblemStateBase &problem_state) {
         Trial tmp = {x_idx, y_idx, val};
         stack_.Push(tmp);
     } else {
-        size_t n_poss = problem_state.GetIdxWithMinPossibility(y_idx, x_idx);
+        size_t n_poss = ps_.GetIdxWithMinPossibility(y_idx, x_idx);
         if (n_poss == 0)
             return;
         bool ret[N_NUM];
-        n_poss = problem_state.GetConstraints(y_idx, x_idx, ret);
+        n_poss = ps_.GetConstraints(y_idx, x_idx, ret);
 
         for (size_t i = 1; i < N_NUM; ++i) {
             if (!ret[i]) {
@@ -66,12 +66,14 @@ void SolverSerial::PushChildren(const ProblemStateBase &problem_state) {
     }
 }
 
-void SolverSerial::TakeSnapshot(size_t y_idx, size_t x_idx, const ProblemStateBase &problem_state) {
+void SolverSerial::TakeSnapshot(size_t y_idx, size_t x_idx) {
     ProblemStateBase *snapshot = nullptr;
     ps_pool_.Apply(y_idx, x_idx, snapshot);
-    *snapshot = problem_state;
+    *snapshot = ps_;
 }
 
-
+bool SolverSerial::SetConstraint(size_t y_idx, size_t x_idx, Element val) {
+    return ps_.Set(y_idx, x_idx, val);
+}
 
 }

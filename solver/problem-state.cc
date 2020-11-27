@@ -173,6 +173,12 @@ ProblemStateBase::ProblemStateBase(const Solvable *problem) :
     SetProblem(problem);
 }
 
+
+void ProblemStateBase::ResetProblem(const Solvable *problem) {
+    Clear();
+    SetProblem(problem);
+}
+
 void ProblemStateBase::SetProblem(const Solvable *problem) {
     Clear();
     for (size_t i = 0; i < SIZE; ++i) {

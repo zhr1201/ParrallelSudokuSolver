@@ -24,6 +24,7 @@
 #include "util/global.h"
 #include "itf/solvable-itf.h"
 #include "util/list-utils.h"
+#include "util/mutex.h"
 
 
 namespace sudoku {
@@ -156,21 +157,24 @@ public:
 
     size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret) const;
 
-    void SanitiCheck() {
-        ElementListNode *cur = head_;
-        while (cur != tail_) {
-            SUDOKU_ASSERT(cur->state_);
-            cur = cur->next_;
-        }
+    // void SanitiCheck() {
+    //     ElementListNode *cur = head_;
+    //     while (cur != tail_) {
+    //         SUDOKU_ASSERT(cur->state_);
+    //         cur = cur->next_;
+    //     }
 
-        for (size_t i = 0; i < N_GRID; ++i) {
-            if (ele_list_[i].state_ == nullptr) {
-                SUDOKU_ASSERT(ele_arr_[i].val_ != UNFILLED);
-            } else {
-                SUDOKU_ASSERT(ele_arr_[i].val_ == UNFILLED);
-            }
-        }
-    }
+    //     for (size_t i = 0; i < N_GRID; ++i) {
+    //         if (ele_list_[i].state_ == nullptr) {
+    //             SUDOKU_ASSERT(ele_arr_[i].val_ != UNFILLED);
+    //         } else {
+    //             SUDOKU_ASSERT(ele_arr_[i].val_ == UNFILLED);
+    //         }
+    //     }
+    // }
+
+    // could be used by passing constraints between processes
+    bool SetConstraint();
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
@@ -185,6 +189,10 @@ private:
     ElementListNode ele_list_[N_GRID];
     ElementListNode *head_;
     ElementListNode *tail_;
+
+    // For concurrency control
+    Mutex mutex_;
+    CondVariable cond_;
 };
 
 
