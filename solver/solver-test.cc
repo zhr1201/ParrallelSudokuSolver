@@ -226,8 +226,6 @@ void TestSerialSolver() {
     const std::string in_csv = "test-data-6.csv";
     TestSudoku ts;
     ts.ReadFromCSV(in_csv);
-    // we can use new here because the time of solving
-    // soduku doesn't include the time of calling the construtor
     SolverSerial *ss = new SolverSerial();
     SudokuAnswer answer;
     
@@ -265,7 +263,6 @@ void TestSerialSolver3() {
     ts.ReadFromCSV(in_csv);
     SolverSerial *ss = new SolverSerial();
     SudokuAnswer answer;
-    
     Timer tm;
     bool ret = ss->Solve(ts, answer);
     std::cout << "Take " << tm.Elapsed() << " to solve" << std::endl;
@@ -286,9 +283,7 @@ int main() {
     TestProblemStateCopyConstructer();
     TestProblemStateAssignOps();
     TestSerialSolver();
-
-    TestSerialSolver2();
+    TestSerialSolver2(); 
     TestSerialSolver3();
-
     return 0;
 }
