@@ -78,6 +78,7 @@ private:
     SolverSerialProxyStub this_solver_stub_;
 };
 
+
 }
 
 

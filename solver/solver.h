@@ -129,7 +129,6 @@ class SolverSerial : public SolverBase {
         void Apply(size_t y_idx, size_t x_idx, ProblemStateBase *&ret) {
             ret = &snapshot_arr_[y_idx][x_idx];
         }
-
     };
 
 public:
