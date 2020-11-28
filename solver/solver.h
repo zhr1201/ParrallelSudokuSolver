@@ -15,17 +15,24 @@
 
 namespace sudoku {
 
+
+enum SolverCoreStatus {
+    UNSET = 0,
+    UNATTEMPTED = 1,
+    LAST_TRY_SUCCEED = 2,
+    LAST_TRY_FAILED = 3,
+    FAILED = 4,
+    SUCCESS = 5
+};
+
+
 class SudokuAnswer : public Validatable {
 public:
     SudokuAnswer() : data_() {};
-    virtual Element GetElement(size_t x_idx, size_t y_idx) const {
-        return data_[y_idx][x_idx];
-    }
-
+    virtual Element GetElement(size_t x_idx, size_t y_idx) const { return data_[y_idx][x_idx]; }
 private:
     Element data_[SIZE][SIZE];
     friend class SolverBase;  // only solver is allowed to modify the answer
-
     // shouldn't copy answer from others :)
     DISALLOW_CLASS_COPY_AND_ASSIGN(SudokuAnswer);
 };
@@ -40,119 +47,94 @@ struct Trial {
 
 
 class TrialStack {
-    Trial trial_stack_[N_GRID * N_NUM];
-    // stack pointer
-    int sp_;
 public:
     TrialStack() : trial_stack_(), sp_(-1) {};
-    Trial Top() {
-        SUDOKU_ASSERT(sp_ >= 0);
-        Trial ret;
-        ret = {trial_stack_[sp_].x_idx_, trial_stack_[sp_].y_idx_, trial_stack_[sp_].val_};
-        return ret;
-    }
+    Trial Top();
+    Trial Pop();
+    void Push(Trial trial);
+    bool Emtpy() { return sp_ == -1; };
+    void Reset() { sp_ = -1; };
+    // caller responsible for proving enough space
+private:
+    Trial trial_stack_[N_GRID * N_NUM];
+    int sp_;  // stack pointer
+};
 
-    Trial Pop() {
-        Trial ret = Top();
-        --sp_;
-        return ret;
+
+// logic of searching (with prunning)
+// no need to worry about copying/creating ProblemState since it is super fast
+// decouple the logic of basic searching from a monolithic serial solver so that
+// some methods can be used by other parrallel solvers
+// probably going to make it a little big less efficient for the serial solver
+class SolverCore {
+    // a memory pool like data structure for snapshot
+    struct ProblemStateMemPool {
+
+        ProblemStateBase snapshot_arr_[SIZE][SIZE];
+        bool snapshot_set_[SIZE][SIZE];
+
+        ProblemStateMemPool() : snapshot_arr_(), snapshot_set_() {};
+        // only need apply method since in a DFS style search, the state of the searched path doesn't need to be stored
+        // so we don't need to return the unused ones, we just need to overwrite the contents
+        void Apply(size_t y_idx, size_t x_idx, ProblemStateBase *&ret) { 
+            ret = &snapshot_arr_[y_idx][x_idx];
+            snapshot_set_[y_idx][x_idx] = true;
+        }
+        void Reset();
     };
 
-    // caller responsible for proving enough space
-    size_t PopManyWithOnePosition(Trial *ret_buffer) {
-        SUDOKU_ASSERT(sp_ >= 0);
-        Trial first = Pop();
-        ret_buffer[0] = first;
-        size_t ret_counter = 1;
-        while (sp_ != -1) {
-            if (trial_stack_[sp_].x_idx_ == first.x_idx_ && trial_stack_[sp_].y_idx_ == first.y_idx_) {
-                ret_counter++;
-                ret_buffer[ret_counter - 1] = trial_stack_[sp_]; 
-            }
-            else
-                break;
-        }
-        return ret_counter;
-    }
+public:
+    SolverCore() : ps_pool_(), stack_(), status_(SolverCoreStatus::UNSET) {};
+    void SetProblem(const Solvable &problem);
 
-    void Push(Trial trial) {
-        trial_stack_[++sp_] = trial;
-        SUDOKU_ASSERT(sp_ < N_GRID * N_NUM);
-    }
+    // Get the element with the min possiblities
+    size_t GetChildren(Trial *trials);
+    // Push into the DFS stack
+    void PushChildren(const Trial *trails, size_t len);
+    // Use the top of the stack to do one trial
+    void GetNextTryIdx(size_t &y_idx, size_t &x_idx);
+    bool TryOneStep();
+    SolverCoreStatus GetStatus() { return status_; };
 
-    bool Emtpy() { return sp_ == -1; };
+    // use snapshots of problem state for backtrace
+    // (logical undo operation is very expensive and hard to implement so ProblemState won't support that)
+    // take a snapshot of ProblemState before filling the entry at y_idx and x_idx
+    void TakeSnapshot(size_t y_idx, size_t x_idx);
+    // recover to the state before trying to fill the element at y_idx, x_idx
+    void RecoverState(size_t y_idx, size_t x_idx);
+
+    // could be used by parallel solver, setting a constriant discovered by another process
+    bool SetConstraint(size_t y_idx, size_t x_idx, Element val);
+
+private:
+
+    // points to a snapshot before filling a particular element
+    ProblemStateMemPool ps_pool_;
+    TrialStack stack_;
+    ProblemStateBase ps_;
+    SolverCoreStatus status_;
+    friend class SolverBase;
+
 };
 
 
 class SolverBase {
 
 public:
-    
-    bool Solve(const Solvable &problem, SudokuAnswer &answer) {
-        ps_.ResetProblem(&problem);
-        if (!ps_.CheckValid()) {
-            return false;
-        }
-        if (!SolverInternal())
-            return false;
-
-        // save answer
-        for (size_t i = 0; i < SIZE; ++i) {
-            for (size_t j = 0; j < SIZE; ++j) {
-                answer.data_[i][j] = ps_.Get(i, j);
-            }
-        }
-        return true;
-    }
-
+    // we can use new here cause solver will be initailized at the begining and will be
+    // reused for each problem
+    SolverBase() : sc_(new SolverCore()){};
+    bool Solve(const Solvable &problem, SudokuAnswer &answer);
     virtual ~SolverBase() {};
-
-protected:
-    ProblemStateBase ps_;
 
 private:
     virtual bool SolverInternal() = 0;
+
+protected:
+    SolverCore *sc_;
+
 };
-
-
-// no need to worry about copying/creating ProblemState since it is super fast
-
-class SolverSerial : public SolverBase {
-
-    // a memory pool like data structure for snapshot
-    struct ProblemStateMemPool {
-
-        ProblemStateBase snapshot_arr_[SIZE][SIZE];
-
-        ProblemStateMemPool() : snapshot_arr_() {};
-        // only need apply since in a DFS style search, the state of the searched path don't need to be stored
-        void Apply(size_t y_idx, size_t x_idx, ProblemStateBase *&ret) {
-            ret = &snapshot_arr_[y_idx][x_idx];
-        }
-    };
-
-public:
-    SolverSerial() : ps_pool_(), stack_() {};
-    bool SetConstraint(size_t y_idx, size_t x_idx, Element val);
-
-private:
-    virtual bool SolverInternal();
-    void PushChildren();
-    void TakeSnapshot(size_t y_idx, size_t x_idx);
-
-    // use snapshots of problem state for backtrace
-    // (logical undo operation is very expensive and hard to implement so ProblemState won't support that)
-    
-    // points to a snapshot before filling a particular element
-    ProblemStateMemPool ps_pool_;
-    TrialStack stack_;
-    ProblemStateBase problem_state_;
-
-    DISALLOW_CLASS_COPY_AND_ASSIGN(SolverSerial);  // copy and asign will probably corrupt pointer arr
-};
-
 
 }
-
 
 #endif

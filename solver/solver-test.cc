@@ -3,7 +3,7 @@
 #include "util/global.h"
 #include "solver/problem-state.h"
 #include "util/string-utils.h"
-#include "solver/solver.h"
+#include "solver/solver-serial.h"
 
 
 namespace sudoku {

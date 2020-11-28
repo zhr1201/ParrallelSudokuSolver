@@ -305,7 +305,10 @@ bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
     // node->NotifyTaken(val);
     node->UnSubcribeAllForCur();
     RemoveFromList(head_, tail_, &ele_list_[IDX2OFFSET(y_idx, x_idx)]);
-    return node->NotifySubscriberConstraints();
+    bool ret = node->NotifySubscriberConstraints();
+    if (!ret)
+        valid_ = false;
+    return ret;
 }
 
 size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) {
@@ -353,7 +356,10 @@ size_t ProblemStateBase::GetConstraints(size_t y_idx, size_t x_idx, bool *ret) {
 bool ProblemStateBase::SetConstraint(size_t y_idx, size_t x_idx, Element val) {
     Lock lock(mutex_);
     size_t idx = IDX2OFFSET(y_idx, x_idx);
-    return ele_arr_[idx].UpdateConstraints(val);
+    bool ret = ele_arr_[idx].UpdateConstraints(val);
+    if (!ret)
+        valid_ = false;
+    return ret;
 }
 
 

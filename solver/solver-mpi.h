@@ -1,8 +1,22 @@
+// MPI soduku solver (Haoran Zhou)
+// hybrid MPI and Pthread programming model
+// one main MPI process to distribute work to worker processes
+// two threads within each worker process, one for computation and one for communication
+
+
 #ifndef SUDOKU_SOLVER_SOLVER_MPI_H_
 #define SUDOKU_SOLVER_SOLVER_MPI_H_
 
 
 #include "solver/solver.h"
+
+
+// types of MPI messages (message header)
+#define SETPROBLEM 0x1
+#define SETCONSTRAINT 0x2
+#define KILL 0x3
+#define ASKFORWORK 0x4
+#define SENDRST 0x5
 
 
 namespace sudoku {
@@ -11,7 +25,7 @@ namespace sudoku {
 // send side proxy, each process will have a proxy to talk to each one of the other process
 class SolverSerialProxy {
 public:
-    SolverSerialProxy(size_t prox_idx);
+    SolverSerialProxy(size_t prox_idx) : prox_idx_(prox_idx) {};
     // most of them should be non-blocking and can't assume they will always succeed
     // initialize a problem
     void SetProblem(Solvable *problem);
@@ -26,7 +40,7 @@ public:
     bool AskForWork();
 
 private:
-    const size_t prox_idx;
+    const size_t prox_idx_;
     DISALLOW_CLASS_COPY_AND_ASSIGN(SolverSerialProxy);
 };
 
