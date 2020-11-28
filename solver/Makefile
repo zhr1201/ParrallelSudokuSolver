@@ -5,7 +5,7 @@ include ../sudoku.mk
 
 TESTFILES = solver-test
 
-OBJFILES = problem-state.o solver-omp.o solver-serial.o solver-mpi.o
+OBJFILES = problem-state.o solver.o solver-omp.o solver-serial.o solver-mpi.o
 
 LIBNAME = sudoku-solver
 

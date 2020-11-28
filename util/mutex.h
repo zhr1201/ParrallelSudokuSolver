@@ -19,7 +19,19 @@ public:
  
 private:
     friend class CondVariable;
+    friend class Lock;
     pthread_mutex_t mutex_;
+};
+
+class Lock {
+public:
+	Lock(Mutex& mutex): mutex_(mutex) {
+		pthread_mutex_lock(&mutex_.mutex_);
+	}
+	~Lock(){
+		pthread_mutex_unlock(&mutex_.mutex_);
+	}
+	Mutex &mutex_;
 };
 
 

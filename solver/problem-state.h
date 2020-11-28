@@ -149,13 +149,13 @@ public:
     // prune criteria 1
     // returns num possibility and indices
     // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation and N is only 9
-    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const;
+    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx);
 
     // prune criteria 2
     // all other peers force the current element to take a certain value
-    bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
+    bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val);
 
-    size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret) const;
+    size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret);
 
     // void SanitiCheck() {
     //     ElementListNode *cur = head_;
@@ -174,7 +174,7 @@ public:
     // }
 
     // could be used by passing constraints between processes
-    bool SetConstraint();
+    bool SetConstraint(size_t y_idx, size_t x_idx, Element val); 
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
@@ -192,7 +192,6 @@ private:
 
     // For concurrency control
     Mutex mutex_;
-    CondVariable cond_;
 };
 
 
