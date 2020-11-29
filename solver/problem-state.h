@@ -3,12 +3,12 @@
 // sovler/problem-state.h (author: Haoran Zhou)
 
 // Class for maintining the current problem solving state and provide prunning info
-// the logic of prunning and searching is not implemented outside this class
+// the logic of prunning and searching should be implemented outside this class
 // this could lead to a slightly worse performance but better software architecture
 
-// !!!IMPORTANT!!!: use stack for alloc the memory because performance is the top priority
+// !!!IMPORTANT!!!: use static array for alloc the memory in the solving phase because performance is the top priority
 // Heap allocation is extreamly slow. Don't use STL containers that could potentional use the new operator or malloc
-// If dynamic heap memory allocation is neccesary, consider using a global memory pool
+// If dynamic heap memory allocation is neccesary, consider using a memory pool
 
 // TODO: declared as base since there could potentially be multiple serializaton implementations
 // possible serialization:
@@ -17,9 +17,14 @@
 //        we can serielize the list using the element index
 
 
+<<<<<<< HEAD
 >>>>>>> d1fb5f5db3ce0dba3bac9cc4e2d8e0080366a2ed
 #ifndef __PROBLEM_INFO__
 #define __PROBLEM_INFO__
+=======
+#ifndef SUDOKU_SOLVER_PROBLEM_INFO_H_
+#define SUDOKU_SOLVER_PROBLEM_INFO_H_
+>>>>>>> solver
 
 #include <queue>
 #include <stack>
@@ -29,6 +34,8 @@
 >>>>>>> d1fb5f5db3ce0dba3bac9cc4e2d8e0080366a2ed
 #include "util/global.h"
 #include "itf/solvable-itf.h"
+#include "util/list-utils.h"
+#include "util/mutex.h"
 
 
 <<<<<<< HEAD
@@ -56,15 +63,9 @@ namespace sudoku {
 >>>>>>> d1fb5f5db3ce0dba3bac9cc4e2d8e0080366a2ed
 class ProblemStateBase {
 
-    struct ElementState;
+    // private helper function and data structures
 
-    struct ElementListNode {
-        ElementListNode() : state_(nullptr), next_(nullptr), prev_(nullptr) {};
-        ElementState* state_;
-        ElementListNode* next_;
-        ElementListNode* prev_;
-    };
-
+<<<<<<< HEAD
 <<<<<<< HEAD
     struct ElementState {
 
@@ -74,8 +75,28 @@ class ProblemStateBase {
 =======
     // private list helper
     static void InsertIntoList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *insert);
+=======
+    struct ElementState;
+    using ElementListNode = ListNode<ElementState>;
 
-    static void RemoveFromList(ElementListNode *&head, ElementListNode *&tail, ElementListNode *remove);
+    // set dst with an offset + src, T could be ElementListNode or ElementState here
+    template <typename T>
+    static void CopyPointer(T *&dst, void *src, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit) {
+        if (src == nullptr) {
+            dst = nullptr;
+            return;
+        }
+        u_longlong_t tmp;
+        if (add) {
+            tmp = (u_longlong_t)src + (u_longlong_t)offset;
+        } else {
+            tmp = (u_longlong_t)src - (u_longlong_t)offset;
+        }
+>>>>>>> solver
+
+        SUDOKU_ASSERT(base <= tmp && tmp < limit);
+        dst = (T*)tmp;
+    }
  
     struct ElementState {
 
@@ -109,7 +130,14 @@ class ProblemStateBase {
         void ReconstructSubscriberIdx();
 =======
         void ConstructSubscriberIdx();
+<<<<<<< HEAD
 >>>>>>> d1fb5f5db3ce0dba3bac9cc4e2d8e0080366a2ed
+=======
+        bool NotifyTaken(Element val);
+        void Clear();
+        // set value from another instance, should only get called by the copy constructor of ProblemState
+        void SetFromAnother(const ElementState &other, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit);
+>>>>>>> solver
 
         Element val_;
         size_t x_idx_;
@@ -156,11 +184,17 @@ class ProblemStateBase {
         
     private:
         inline size_t GetIdxInSubList(size_t y_idx, size_t x_idx);
+        DISALLOW_CLASS_COPY_AND_ASSIGN(ElementState);
     };
 
 
-public:
+public:    
+    // start of ProblemStateBase def 
+    ProblemStateBase() {};
 
+    ProblemStateBase(const Solvable *problem);
+
+<<<<<<< HEAD
     ProblemStateBase(Solvable *problem);
 <<<<<<< HEAD
     ProblemStateBase(Solvable &other);
@@ -173,40 +207,67 @@ public:
     // helper for using copy constructor for assignment
     friend void swap(ProblemStateBase &first, ProblemStateBase &second);
 =======
+=======
+>>>>>>> solver
     // deep copy constructor
-    ProblemStateBase(ProblemStateBase &other);
+    ProblemStateBase(const ProblemStateBase &other);
 
-    // copy-and-swap
+    void ResetProblem(const Solvable *problem);
+
+    // can't use copy-and-swap idom here cause the pointers variable is not allocated using new
+    // and is pointing to some address within the data structure
     ProblemStateBase& operator=(const ProblemStateBase& other);
 
-    // helper for copy-and-swap idom
-    friend void swap(ProblemStateBase &first, ProblemStateBase &second) {
-        // enable ADL
-        using std::swap;
-        swap(first.ele_arr_, second.ele_arr_);
-        swap(first.valid_, second.valid_);
-        swap(first.ele_list_, second.ele_list_);
-        swap(first.head_, second.head_);
-        swap(first.tail_, second.tail_);
-    };
+    // TODO: refac to one state check call
+    bool CheckValid() const { return valid_; };
 
-    bool CheckValid() { return valid_; };
+    bool CheckSolved() const { return valid_ && (!head_); };
 
     // worst case O(N ^ 2) to prop constraints but get smaller near the end
     bool Set(size_t y_idx, size_t x_idx, Element val);
 
+    Element Get(size_t y_idx, size_t x_idx) const { return ele_arr_[IDX2OFFSET(y_idx, x_idx)].val_; };
+
     // prune criteria 1
     // returns num possibility and indices
     // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation and N is only 9
-    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const; 
+    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx);
 
     // prune criteria 2
     // all other peers force the current element to take a certain value
+<<<<<<< HEAD
     bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
 >>>>>>> d1fb5f5db3ce0dba3bac9cc4e2d8e0080366a2ed
+=======
+    bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val);
+
+    size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret);
+
+    // void SanitiCheck() {
+    //     ElementListNode *cur = head_;
+    //     while (cur != tail_) {
+    //         SUDOKU_ASSERT(cur->state_);
+    //         cur = cur->next_;
+    //     }
+
+    //     for (size_t i = 0; i < N_GRID; ++i) {
+    //         if (ele_list_[i].state_ == nullptr) {
+    //             SUDOKU_ASSERT(ele_arr_[i].val_ != UNFILLED);
+    //         } else {
+    //             SUDOKU_ASSERT(ele_arr_[i].val_ == UNFILLED);
+    //         }
+    //     }
+    // }
+
+    // could be used by passing constraints between processes
+    bool SetConstraint(size_t y_idx, size_t x_idx, Element val); 
+>>>>>>> solver
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
+    void SetFromAnother(const ProblemStateBase &other);
+    void Clear();
+    void SetProblem(const Solvable *problem);
 
 <<<<<<< HEAD
     void RemoveNode(ElementState *node);
@@ -221,7 +282,13 @@ private:
     ElementListNode ele_list_[N_GRID];
     ElementListNode *head_;
     ElementListNode *tail_;
+<<<<<<< HEAD
 >>>>>>> d1fb5f5db3ce0dba3bac9cc4e2d8e0080366a2ed
+=======
+
+    // Thread safe in case we need to combine MPI with pthread
+    Mutex mutex_;
+>>>>>>> solver
 };
 
 

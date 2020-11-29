@@ -1,5 +1,5 @@
-#ifndef _GLOBAL_H_
-#define _GLOBAL_H_
+#ifndef SUDOKU_UTIL_GLOBAL_H_
+#define SUDOKU_UTIL_GLOBAL_H_
 
 
 #include <cstdio>
@@ -35,6 +35,10 @@
 #define posix_memfree(pmemptr) (free(pmemptr))
 #endif
 
+#ifndef u_longlong_t
+typedef unsigned long long u_longlong_t;
+#endif
+
 
 // Gloabl macros
 #define UNFILLED 0
@@ -45,6 +49,9 @@
 #define SUB_SIZE 3
 #define N_NUM 10
 #define N_PEERS 20
+
+// macro functions
+#define IDX2OFFSET(Y, X)  (Y * SIZE + X)
 
 
 // Global alias

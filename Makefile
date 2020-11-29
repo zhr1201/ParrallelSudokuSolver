@@ -5,7 +5,7 @@
 SHELL := /bin/bash
 
 SUBDIRS = util eval evalbin generator generatorbin \
-          solver solverbin
+          solver solverbin validator validatorbin
 
 SUBDIRS_LIB = $(filter-out %bin, $(SUBDIRS))
 
@@ -70,4 +70,4 @@ evalbin generatorbin probleminfobin solverbin: \
 eval: util 
 generator: util
 probleminfo: util
-solver: util
+solver: util validator

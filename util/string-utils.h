@@ -1,5 +1,5 @@
-#ifndef STRING_UTILS_H_
-#define STRING_UTILS_H_
+#ifndef SUDOKU_UTIL_STRING_UTILS_H_
+#define SUDOKU_UTIL_STRING_UTILS_H_
 
 #include "../util/global.h"
 #include <sstream>

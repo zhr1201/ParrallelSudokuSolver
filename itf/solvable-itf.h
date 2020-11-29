@@ -1,5 +1,5 @@
-#ifndef SOLVABLE_ITF_H
-#define SOLVABLE_ITF_H
+#ifndef SUDOKU_ITF_SOLVABLE_ITF_H_
+#define SUDOKU_ITF_SOLVABLE_ITF_H_
 
 #include "../util/global.h"
 
