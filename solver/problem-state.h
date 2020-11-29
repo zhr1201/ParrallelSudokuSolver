@@ -4,9 +4,9 @@
 // the logic of prunning and searching should be implemented outside this class
 // this could lead to a slightly worse performance but better software architecture
 
-// !!!IMPORTANT!!!: use stack for alloc the memory because performance is the top priority
+// !!!IMPORTANT!!!: use static array for alloc the memory in the solving phase because performance is the top priority
 // Heap allocation is extreamly slow. Don't use STL containers that could potentional use the new operator or malloc
-// If dynamic heap memory allocation is neccesary, consider using a global memory pool
+// If dynamic heap memory allocation is neccesary, consider using a memory pool
 
 // TODO: declared as base since there could potentially be multiple serializaton implementations
 // possible serialization:
@@ -24,6 +24,7 @@
 #include "util/global.h"
 #include "itf/solvable-itf.h"
 #include "util/list-utils.h"
+#include "util/mutex.h"
 
 
 namespace sudoku {
@@ -79,6 +80,7 @@ class ProblemStateBase {
         // we don't want to send subsciber_idx_ through the network
         void ConstructSubscriberIdx();
         bool NotifyTaken(Element val);
+        void Clear();
         // set value from another instance, should only get called by the copy constructor of ProblemState
         void SetFromAnother(const ElementState &other, u_longlong_t offset, bool add, u_longlong_t base, u_longlong_t limit);
 
@@ -128,7 +130,9 @@ public:
     // deep copy constructor
     ProblemStateBase(const ProblemStateBase &other);
 
-    // can't use copy-and-swap idom here cause the pointers variable is not on heap
+    void ResetProblem(const Solvable *problem);
+
+    // can't use copy-and-swap idom here cause the pointers variable is not allocated using new
     // and is pointing to some address within the data structure
     ProblemStateBase& operator=(const ProblemStateBase& other);
 
@@ -145,33 +149,38 @@ public:
     // prune criteria 1
     // returns num possibility and indices
     // worst case O(N ^ 2), priority queue can be used but will cost O (N log N) for each Set operation and N is only 9
-    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const;
+    size_t GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx);
 
     // prune criteria 2
     // all other peers force the current element to take a certain value
-    bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const;
+    bool GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val);
 
-    size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret) const;
+    size_t GetConstraints(size_t y_idx, size_t x_idx, bool *ret);
 
-    void SanitiCheck() {
-        ElementListNode *cur = head_;
-        while (cur != tail_) {
-            SUDOKU_ASSERT(cur->state_);
-            cur = cur->next_;
-        }
+    // void SanitiCheck() {
+    //     ElementListNode *cur = head_;
+    //     while (cur != tail_) {
+    //         SUDOKU_ASSERT(cur->state_);
+    //         cur = cur->next_;
+    //     }
 
-        for (size_t i = 0; i < N_GRID; ++i) {
-            if (ele_list_[i].state_ == nullptr) {
-                SUDOKU_ASSERT(ele_arr_[i].val_ != UNFILLED);
-            } else {
-                SUDOKU_ASSERT(ele_arr_[i].val_ == UNFILLED);
-            }
-        }
-    }
+    //     for (size_t i = 0; i < N_GRID; ++i) {
+    //         if (ele_list_[i].state_ == nullptr) {
+    //             SUDOKU_ASSERT(ele_arr_[i].val_ != UNFILLED);
+    //         } else {
+    //             SUDOKU_ASSERT(ele_arr_[i].val_ == UNFILLED);
+    //         }
+    //     }
+    // }
+
+    // could be used by passing constraints between processes
+    bool SetConstraint(size_t y_idx, size_t x_idx, Element val); 
 
 private:
     void SubscribePeers(size_t y_idx, size_t x_idx);
     void SetFromAnother(const ProblemStateBase &other);
+    void Clear();
+    void SetProblem(const Solvable *problem);
 
     ElementState ele_arr_[N_GRID];    
     bool valid_;
@@ -180,6 +189,9 @@ private:
     ElementListNode ele_list_[N_GRID];
     ElementListNode *head_;
     ElementListNode *tail_;
+
+    // Thread safe in case we need to combine MPI with pthread
+    Mutex mutex_;
 };
 
 

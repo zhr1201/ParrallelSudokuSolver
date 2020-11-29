@@ -1,77 +1,47 @@
-#include "solver/solver.h"
+#include "solver/solver-serial.h"
 
 
 namespace sudoku {
 
 
-bool SolverSerial::SolverInternal(ProblemStateBase &problem_state) {
+SolverSerial* SolverSerial::singleton_ = nullptr;
 
-    PushChildren(problem_state);
-    bool trial_suc = true;
 
-    while (!stack_.Emtpy()) {
-        Trial ret = stack_.Pop();
-        SUDOKU_ASSERT(ret.val_ != UNFILLED);
-        if (trial_suc) {
-            // problem_state.SanitiCheck();
-            TakeSnapshot(ret.y_idx_, ret.x_idx_, problem_state);
-        }
+SolverSerial* SolverSerial::GetInstance() {
+    if (singleton_ == nullptr) {
+        singleton_ = new SolverSerial();
+    }
+    return singleton_;
+}
 
-        trial_suc = problem_state.Set(ret.y_idx_, ret.x_idx_, ret.val_);
 
-        // problem solved
-        if (problem_state.CheckSolved()) {
-            return true;
-        }
-        if (trial_suc) {
-            // success, see if there are more things to fill
-            PushChildren(problem_state);
+bool SolverSerial::SolverInternal() {
+    SUDOKU_ASSERT(sc_->GetStatus() != SolverCoreStatus::UNSET);
+    // tmp vars for return
+    Trial children[N_NUM];
+    size_t y_idx, x_idx;
+
+    while (sc_->GetStatus() != SolverCoreStatus::FAILED &&
+           sc_->GetStatus() != SolverCoreStatus::SUCCESS) {
+
+        if (sc_->GetStatus() == SolverCoreStatus::LAST_TRY_FAILED) {
+            // backtrace
+            sc_->GetNextTryIdx(y_idx, x_idx);
+            sc_->RecoverState(y_idx, x_idx);
+
         } else {
-            // fail, backtrace
-            if (!stack_.Emtpy()) {
-                ret = stack_.Top();
-                problem_state = ps_pool_.snapshot_arr_[ret.y_idx_][ret.x_idx_];
-            }
+            // LAST_TRY_SUCCESS or UNATTENPED
+            size_t num = sc_->GetChildren(children);
+            sc_->PushChildren(children, num);
+            sc_->GetNextTryIdx(y_idx, x_idx);
+            sc_->TakeSnapshot(y_idx, x_idx);
         }
+
+        sc_->TryOneStep();
     }
 
-    return problem_state.CheckSolved();
+    return (sc_->GetStatus() == SolverCoreStatus::SUCCESS);
 }
-
-void SolverSerial::PushChildren(const ProblemStateBase &problem_state) {
-
-    size_t x_idx, y_idx;
-    Element val;
-    bool ret = problem_state.GetIdxFixedByPeers(y_idx, x_idx, val);
-    if (!problem_state.CheckValid()) {
-        return;
-    }
-    
-    if (ret) {
-        Trial tmp = {x_idx, y_idx, val};
-        stack_.Push(tmp);
-    } else {
-        size_t n_poss = problem_state.GetIdxWithMinPossibility(y_idx, x_idx);
-        if (n_poss == 0)
-            return;
-        bool ret[N_NUM];
-        n_poss = problem_state.GetConstraints(y_idx, x_idx, ret);
-
-        for (size_t i = 1; i < N_NUM; ++i) {
-            if (!ret[i]) {
-                Trial tmp = {x_idx, y_idx, i};
-                stack_.Push(tmp);
-            }
-        }
-    }
-}
-
-void SolverSerial::TakeSnapshot(size_t y_idx, size_t x_idx, const ProblemStateBase &problem_state) {
-    ProblemStateBase *snapshot = nullptr;
-    ps_pool_.Apply(y_idx, x_idx, snapshot);
-    *snapshot = problem_state;
-}
-
 
 
 }

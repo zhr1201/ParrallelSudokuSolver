@@ -148,11 +148,40 @@ bool ProblemStateBase::ElementState::NotifyTaken(Element val) {
     return true;
 }
 
+void ProblemStateBase::ElementState::Clear() {
+    val_ = UNFILLED;
+    x_idx_ = 0;
+    y_idx_ = 0;
+    n_possibilities_ = N_NUM - 1;
+    std::fill(peer_possibilities_array_, peer_possibilities_array_ + N_NUM, N_PEERS);
+    val_fix_ = UNFILLED;
+    std::fill(constraints_, constraints_ + N_NUM, false);
+    head_ = nullptr;
+    tail_ = nullptr;
+    for (size_t i = 0; i < N_PEERS; ++i) {
+        subscriber_list_[i].prev_ = nullptr;
+        subscriber_list_[i].state_ = nullptr;
+        subscriber_list_[i].next_ = nullptr;
+    }
+    // no need to reset since its going to be the same
+    // std::fill(subscriber_idx_, subscriber_idx_ + N_GRID, 0);
+}
 
 // an expensive setup O(N ^ 3), but reduce repeatedly computing active peers later
 ProblemStateBase::ProblemStateBase(const Solvable *problem) :
          ele_arr_(), valid_(true), ele_list_(), head_(nullptr), tail_(nullptr) {  
-    
+    SetProblem(problem);
+}
+
+
+void ProblemStateBase::ResetProblem(const Solvable *problem) {
+    Clear();
+    SetProblem(problem);
+}
+
+void ProblemStateBase::SetProblem(const Solvable *problem) {
+    Clear();
+    mutex_.Lock();
     for (size_t i = 0; i < SIZE; ++i) {
         for (size_t j = 0; j < SIZE; ++j) {
             size_t offset = IDX2OFFSET(i, j);
@@ -162,11 +191,13 @@ ProblemStateBase::ProblemStateBase(const Solvable *problem) :
             InsertIntoList(head_, tail_, ele_list_ + offset);
             ele_arr_[offset].ConstructSubscriberIdx();
         }
-    };
+    }
 
     for (size_t i = 0; i < SIZE; ++i) {
         for (size_t j = 0; j < SIZE; ++j) {
+            mutex_.Unlock();
             SubscribePeers(i, j);
+            mutex_.Lock();
         }
     }
 
@@ -174,14 +205,33 @@ ProblemStateBase::ProblemStateBase(const Solvable *problem) :
         for (size_t j = 0; j < SIZE; ++j) {
             Element tmp = problem->GetElement(j, i);
             if (tmp != UNFILLED) {
-                if (!Set(i, j, tmp)) {
+                mutex_.Unlock();
+                bool ret = Set(i, j, tmp);
+                mutex_.Lock();
+                if (!ret) {
                     valid_ = false;
                 }
             }
         }
-    }        
+    }
+    mutex_.Unlock();
 }
 
+void ProblemStateBase::Clear() {
+    Lock lock(mutex_);
+    valid_ = true;
+    head_ = nullptr;
+    tail_ = nullptr;
+    for (size_t i = 0; i < SIZE; ++i) {
+        for (size_t j = 0; j < SIZE; ++j) {
+            size_t offset = IDX2OFFSET(i, j);
+            ele_list_[offset].state_ = nullptr;
+            ele_list_[offset].prev_ = nullptr; 
+            ele_list_[offset].next_ = nullptr;
+            ele_arr_[offset].Clear();
+        }
+    }
+}
 
 ProblemStateBase::ProblemStateBase(const ProblemStateBase &other) {
     // adding the offset to pointers
@@ -189,13 +239,14 @@ ProblemStateBase::ProblemStateBase(const ProblemStateBase &other) {
     SetFromAnother(other);
 }
 
-// can't use copy-and-swap here (pointer pointing to release data on stack)
+// can't use copy-and-swap here
 ProblemStateBase& ProblemStateBase::operator=(const ProblemStateBase& other) {
     SetFromAnother(other);
     return *this;
 }
 
 void ProblemStateBase::SetFromAnother(const ProblemStateBase &other) {
+    Lock lock(mutex_);
     valid_ = other.valid_;
     bool add = this > &other;
     u_longlong_t offset = add ? ((u_longlong_t)this - (u_longlong_t)&other) : ((u_longlong_t)&other - (u_longlong_t)this);
@@ -215,6 +266,7 @@ void ProblemStateBase::SetFromAnother(const ProblemStateBase &other) {
 
 
 void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
+    Lock lock(mutex_);
     ElementState *cur = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
     size_t blk_y_start = y_idx / SUB_SIZE * SUB_SIZE;
     size_t blk_x_start = x_idx / SUB_SIZE * SUB_SIZE;
@@ -241,6 +293,7 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
 }
 
 bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
+    Lock lock(mutex_);
     ElementState *node = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
     SUDOKU_ASSERT(node->val_ == UNFILLED);
 
@@ -252,10 +305,14 @@ bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
     // node->NotifyTaken(val);
     node->UnSubcribeAllForCur();
     RemoveFromList(head_, tail_, &ele_list_[IDX2OFFSET(y_idx, x_idx)]);
-    return node->NotifySubscriberConstraints();
+    bool ret = node->NotifySubscriberConstraints();
+    if (!ret)
+        valid_ = false;
+    return ret;
 }
 
-size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) const {
+size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) {
+    Lock lock(mutex_);
     ElementListNode *cur = head_;
     ElementListNode *min = head_;
     while (cur != nullptr) {
@@ -274,7 +331,8 @@ size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) 
     
 }
 
-bool ProblemStateBase::GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) const {
+bool ProblemStateBase::GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) {
+    Lock lock(mutex_);
     ElementListNode *cur = head_;
     while (cur != nullptr) {
         if (cur->state_->val_fix_ != UNFILLED) {
@@ -288,10 +346,21 @@ bool ProblemStateBase::GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element 
     return false;
 }
 
-size_t ProblemStateBase::GetConstraints(size_t y_idx, size_t x_idx, bool *ret) const {
+size_t ProblemStateBase::GetConstraints(size_t y_idx, size_t x_idx, bool *ret) {
+    Lock lock(mutex_);
     const ElementState *node = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
     memcpy(ret, node->constraints_, sizeof(bool) * N_NUM);
     return node->n_possibilities_;
 }
+
+bool ProblemStateBase::SetConstraint(size_t y_idx, size_t x_idx, Element val) {
+    Lock lock(mutex_);
+    size_t idx = IDX2OFFSET(y_idx, x_idx);
+    bool ret = ele_arr_[idx].UpdateConstraints(val);
+    if (!ret)
+        valid_ = false;
+    return ret;
+}
+
 
 }
