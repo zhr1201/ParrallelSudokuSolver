@@ -190,7 +190,7 @@ private:
     ElementListNode *head_;
     ElementListNode *tail_;
 
-    // For concurrency control
+    // Thread safe in case we need to combine MPI with pthread
     Mutex mutex_;
 };
 

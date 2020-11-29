@@ -4,6 +4,17 @@
 namespace sudoku {
 
 
+SolverSerial* SolverSerial::singleton_ = nullptr;
+
+
+SolverSerial* SolverSerial::GetInstance() {
+    if (singleton_ == nullptr) {
+        singleton_ = new SolverSerial();
+    }
+    return singleton_;
+}
+
+
 bool SolverSerial::SolverInternal() {
     SUDOKU_ASSERT(sc_->GetStatus() != SolverCoreStatus::UNSET);
     // tmp vars for return

@@ -121,7 +121,7 @@ void TestSerialSolver() {
     const std::string in_csv = "test-data-6.csv";
     TestSudoku ts;
     ts.ReadFromCSV(in_csv);
-    SolverSerial *ss = new SolverSerial();
+    SolverSerial *ss = SolverSerial::GetInstance();
     SudokuAnswer answer;
     
     Timer tm;
@@ -139,7 +139,7 @@ void TestSerialSolver2() {
     const std::string in_csv = "test-data-7.csv";
     TestSudoku ts;
     ts.ReadFromCSV(in_csv);
-    SolverSerial *ss = new SolverSerial();
+    SolverSerial *ss = SolverSerial::GetInstance();
     SudokuAnswer answer;
     
     Timer tm;
@@ -156,7 +156,7 @@ void TestSerialSolver3() {
     const std::string in_csv = "test-data-8.csv";
     TestSudoku ts;
     ts.ReadFromCSV(in_csv);
-    SolverSerial *ss = new SolverSerial();
+    SolverSerial *ss = SolverSerial::GetInstance();
     SudokuAnswer answer;
     Timer tm;
     bool ret = ss->Solve(ts, answer);
