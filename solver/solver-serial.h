@@ -8,9 +8,12 @@ namespace sudoku {
 
 
 class SolverSerial : public SolverBase {
-
 public:
+    static SolverSerial* GetInstance();
+
+protected:
     SolverSerial() {};
+    static SolverSerial* singleton_;
 
 private:
     virtual bool SolverInternal();
