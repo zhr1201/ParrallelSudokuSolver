@@ -24,31 +24,36 @@ void generator::createSudoku(int difficulty, std::string fileName) {
     //create random Sudoku array by rotate and flip the given array
     createRandomSudoku();
 
-    //Given three difficulty levels
-    int elementToBeSolved = difficulty;
-    //printf("Number of elements to be Filled Out: %d\n", difficulty);
+    int tempSudokuArr[9][9];
+    for (int i=0;i<9;i++) {
+        for (int j=0;j<9;j++) {
+            tempSudokuArr[i][j] = sudokuArr[i][j];
+        }
+    }
 
     //replace the number by 0
+    int elementToBeSolved = difficulty;
+
     while(elementToBeSolved > 0) {
         int col = rand()%9;
         int row = rand()%9;
-        if (sudokuArr[col][row]!= 0) {
-            sudokuArr[col][row] = 0;
+        if (tempSudokuArr[col][row]!= 0) {
+            tempSudokuArr[col][row] = 0;
             elementToBeSolved --;
         }
     }
 
 
     //write output file
-    std::ofstream sudokuFile(fileName);
+    std::ofstream sudokuFile("../" + fileName);
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
             if (j < 8) {
-                sudokuFile << sudokuArr[i][j];
+                sudokuFile << tempSudokuArr[i][j];
                 sudokuFile << ",";
             }
             else if (j == 8) {
-                sudokuFile << sudokuArr[i][j];
+                sudokuFile << tempSudokuArr[i][j];
                 sudokuFile << "\r\n";
             }
         }
