@@ -46,6 +46,23 @@ void SolverCore::SetProblem(const Solvable &problem) {
     }
 }
 
+
+void SolverCore::SetProblem(const Solvable &problem) {
+    ps_pool_.Reset();
+    stack_.Reset();
+    ps_.ResetProblem(&problem);
+    status_ = SolverCoreStatus::UNATTEMPTED;
+    if (!ps_.CheckValid()) {
+        status_ = SolverCoreStatus::FAILED;
+        return;
+    }
+    if (ps_.CheckSolved()) {
+        status_ = SolverCoreStatus::SUCCESS;
+        return;
+    }
+}
+
+
 size_t SolverCore::GetChildren(Trial *trials) {
     SUDOKU_ASSERT(status_ == SolverCoreStatus::LAST_TRY_SUCCEED ||
                   status_ == SolverCoreStatus::UNATTEMPTED);
@@ -138,6 +155,39 @@ void SolverCore::RecoverState(size_t y_idx, size_t x_idx) {
     SUDOKU_ASSERT(ps_pool_.snapshot_set_[y_idx][x_idx]);
     ps_ = ps_pool_.snapshot_arr_[y_idx][x_idx];
     status_ = SolverCoreStatus::LAST_TRY_SUCCEED;
+}
+
+void SolverCore::GetElementAtSnapshot(size_t y_idx, size_t x_idx, Element **ret) {
+    SUDOKU_ASSERT(ps_pool_.snapshot_set_[y_idx][x_idx]);
+    for (size_t i = 0; i < SIZE; ++i) {
+        for (size_t j = 0; j < SIZE; ++j) {
+            ret[i][j] = ps_pool_.snapshot_arr_[y_idx][x_idx].Get(i, j);
+        }
+    }
+}
+
+void SolverCore::GetElement(Element **ret) {
+    for (size_t i = 0; i < SIZE; ++i) {
+        for (size_t j = 0; j < SIZE; ++j) {
+            ret[i][j] = ps_.Get(i, j);
+        }
+    }
+}
+
+size_t SolverCore::GetTrialsInStack(Trial *ret) {
+    for (size_t i = 0; i < stack_.sp_ + 1; ++i) {
+        ret[i] = stack_.trial_stack_[i];
+    }
+    return stack_.sp_ + 1;
+}
+
+void SolverCore::SetAnswer(Element** answer) {
+    for (size_t i = 0; i < SIZE; ++i) {
+        for (size_t j = 0; j < SIZE; ++j) {
+            ps_.SetAnswer(i, j, answer[i][j]);
+        }
+    }
+    status_ = SolverCoreStatus::SUCCESS;
 }
 
 

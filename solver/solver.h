@@ -22,7 +22,9 @@ enum SolverCoreStatus {
     LAST_TRY_SUCCEED = 2,
     LAST_TRY_FAILED = 3,
     FAILED = 4,
-    SUCCESS = 5
+    SUCCESS = 5,
+    // one solution find by other workers
+    KILLED = 6
 };
 
 
@@ -39,10 +41,25 @@ private:
 
 
 // record all trials and so that we can use stack to do backtracking
+# define TRIAL_SIZE 12
+
 struct Trial {
     size_t x_idx_;
     size_t y_idx_;
     Element val_;
+    
+    void Serialize(char *buf) {
+        memcpy(buf, &x_idx_, 4);
+        memcpy(buf + 4, &y_idx_, 4);
+        memcpy(buf + 8, &val_, 4);
+        
+    }
+
+    void Deserialize(const char *buf) {
+        memcpy(&x_idx_, buf, 4);
+        memcpy(&y_idx_, buf + 4, 4);
+        memcpy(&val_, buf + 8, 4);
+    }
 };
 
 
@@ -54,10 +71,12 @@ public:
     void Push(Trial trial);
     bool Emtpy() { return sp_ == -1; };
     void Reset() { sp_ = -1; };
+    size_t Size() { return sp_ + 1; }
     // caller responsible for proving enough space
 private:
     Trial trial_stack_[N_GRID * N_NUM];
     int sp_;  // stack pointer
+    friend class SolverCore;
 };
 
 
@@ -87,9 +106,10 @@ public:
     SolverCore() : ps_pool_(), stack_(), status_(SolverCoreStatus::UNSET) {};
     void SetProblem(const Solvable &problem);
 
-    // Get the element with the min possiblities
+    // get the element with the min possiblities
     size_t GetChildren(Trial *trials);
-    // Push into the DFS stack
+    // push into the DFS stack
+    // used for 1. DFS search 2. force the solver to search in a particular direction (set problem in another process)
     void PushChildren(const Trial *trails, size_t len);
     // Use the top of the stack to do one trial
     void GetNextTryIdx(size_t &y_idx, size_t &x_idx);
@@ -103,8 +123,21 @@ public:
     // recover to the state before trying to fill the element at y_idx, x_idx
     void RecoverState(size_t y_idx, size_t x_idx);
 
+    // useful for splitting work, returns a 2 D sudoku mat
+    void GetElementAtSnapshot(size_t y_idx, size_t x_idx, Element **ret);
+    void GetElement(Element **ret);
+    // get the current number of feasible branches of the DFS tree, sizeof the stack
+    // useful for splitting the work into a fixed number of subproblems
+    size_t GetNumBranches() { return stack_.Size(); };
+    size_t GetTrialsInStack(Trial *ret);
+
     // could be used by parallel solver, setting a constriant discovered by another process
     bool SetConstraint(size_t y_idx, size_t x_idx, Element val);
+
+    // only used when you know it's the correct answer for sure
+    // (another process solved the problem and tell you the answer)
+    void SetAnswer(Element** answer);
+    void Stop() { status_ = SolverCoreStatus::KILLED; };
 
 private:
 

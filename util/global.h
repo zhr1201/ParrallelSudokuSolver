@@ -50,6 +50,11 @@ typedef unsigned long long u_longlong_t;
 #define N_NUM 10
 #define N_PEERS 20
 
+
+// MPI Settings
+#define MAX_WORKERS 16
+#define MIN_WORKERS 2
+
 // macro functions
 #define IDX2OFFSET(Y, X)  (Y * SIZE + X)
 

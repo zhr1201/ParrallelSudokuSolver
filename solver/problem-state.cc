@@ -311,6 +311,15 @@ bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
     return ret;
 }
 
+
+// only used when you know it's correct for sure
+void ProblemStateBase::SetAnswer(size_t y_idx, size_t x_idx, Element val) {
+    Lock lock(mutex_);
+    ElementState *node = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
+    SUDOKU_ASSERT(node->val_ == UNFILLED);
+    node->val_ = val;
+}
+
 size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) {
     Lock lock(mutex_);
     ElementListNode *cur = head_;

@@ -144,6 +144,9 @@ public:
     // worst case O(N ^ 2) to prop constraints but get smaller near the end
     bool Set(size_t y_idx, size_t x_idx, Element val);
 
+    // only used when you know it is the correct answer (should be called to set all the blanks)
+    void SetAnswer(size_t y_idx, size_t x_idx, Element val);
+
     Element Get(size_t y_idx, size_t x_idx) const { return ele_arr_[IDX2OFFSET(y_idx, x_idx)].val_; };
 
     // prune criteria 1
