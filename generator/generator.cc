@@ -19,14 +19,14 @@ int sudokuArr[9][9] = {{7, 3, 5, 6, 1, 4, 8, 9, 2},
 
 
 //Generate Sudoku Array and write to a .csv file
-void generator::createSudoku(int difficulty) {
+void generator::createSudoku(int difficulty, std::string fileName) {
 
     //create random Sudoku array by rotate and flip the given array
     createRandomSudoku();
 
     //Given three difficulty levels
     int elementToBeSolved = difficulty;
-    printf("Number of elements to be Filled Out: %d\n", difficulty);
+    //printf("Number of elements to be Filled Out: %d\n", difficulty);
 
     //replace the number by 0
     while(elementToBeSolved > 0) {
@@ -40,7 +40,7 @@ void generator::createSudoku(int difficulty) {
 
 
     //write output file
-    std::ofstream sudokuFile("sudokuDemo.csv");
+    std::ofstream sudokuFile(fileName);
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
             if (j < 8) {

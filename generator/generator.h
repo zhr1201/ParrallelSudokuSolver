@@ -4,7 +4,7 @@
 
 class generator {
     public:
-        static void createSudoku(int difficulty);
+        static void createSudoku(int difficulty, std::string fileName);
         static void createRandomSudoku();
 };
 
