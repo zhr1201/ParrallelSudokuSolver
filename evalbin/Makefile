@@ -4,6 +4,8 @@ all:
 EXTRA_CXXFLAGS = -Wno-sign-compare
 include ../sudoku.mk
 
+MPITESTFILES =
+
 BINFILES = eval-mpi-throughput eval-serial-throughput eval-omp-throughput
 
 OBJFILES =

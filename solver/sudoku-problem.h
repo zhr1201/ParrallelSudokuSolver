@@ -12,7 +12,7 @@ namespace sudoku {
 class SSudoku : public Solvable {
 public:
 
-    SSudoku(Element **problem) {
+    SSudoku(Element *problem) {
         memcpy(data_, problem, SIZE * SIZE * sizeof(Element));
     }
 
@@ -25,10 +25,8 @@ public:
 
             std::getline(file, line);
             std::vector<std::string> sep_num = split(line, ",");
-            data_.push_back(std::vector<Element>());
-            assert(sep_num.size() == SIZE);
             for (size_t j = 0; j < SIZE; ++j) {
-                data_[i][j] = sep_num[j]);
+                data_[i][j] = stoi(sep_num[j]);
             }
         }
     }

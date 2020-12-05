@@ -8,7 +8,7 @@
 #define SUDOKU_SOLVER_SOLVER_MPI_H_
 
 #include <mpi.h>
-#include <vecotor>
+#include <vector>
 
 #include "solver/solver.h"
 
@@ -46,6 +46,7 @@ namespace sudoku {
 // send call are all blocking for buffer usage
 class WorkerProxy {
 public:
+    WorkerProxy() {};
     void SetIdx(size_t idx) { prox_idx_ = idx; };
 
     // initialize a problem, in respond to a AskForWork request, non_blocking
@@ -60,7 +61,7 @@ public:
     //     1) share the problem with 5 (split = 4)
     //     2) share the problem with 3 (split = 2)
     //     3) share the problem with 2 (split = 1)
-    void PushProlem(Element **problem, Trial *trials, size_t size, size_t split);
+    void PushProblem(Element *problem, Trial *trials, size_t size, size_t split);
 
     // tell the node to stop
     void Stop();
@@ -76,7 +77,7 @@ public:
 
 private:
     size_t prox_idx_;
-    char send_buffer_[MAX_PEER_MSG_LEN];
+    char send_buffer_[MAX_WORKER_MSG_LEN];
     DISALLOW_CLASS_COPY_AND_ASSIGN(WorkerProxy);
 };
 
@@ -88,13 +89,12 @@ class WorkerNode;
 class WorkerStub {
 public:
     WorkerStub(SolverCore *sc, WorkerNode *node) : sc_(sc), worker_node_(node) {};
-
-private:
     // void SetProblem();
     void PushProblem(char* msg);
     void Stop();
     void Kill();
 
+private:
     // if C ask work from B and B has finished all its work, we don't
     // allow B to ask work from A and pass it for B, cause it's also going to cause too mucch communication overhead
     // void AskForWork();
@@ -108,7 +108,7 @@ private:
 
 class MainProxy {
 public:
-    void SendResults(bool success, Element **rst);
+    void SendResults(bool success, Element *rst);
 private:
     char send_buffer_[MAX_MAIN_MSG_LEN];
     DISALLOW_CLASS_COPY_AND_ASSIGN(MainProxy);
@@ -141,9 +141,9 @@ public:
 
 protected:
 
-    bool SplitWorkToTwo(Element **problem1, Element **problem2, Trial *trials1, size_t &size1, Trials *trials2, size_t &size2);
+    bool SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, size_t &size1, Trial *trials2, size_t &size2);
     // determine msg type and return a pointer to the msg body
-    int PreProcessMsg(char *msg_tot, char &*msg_body);
+    int PreProcessMsg(char *msg_tot, char *&msg_body);
 
     int mpi_procs_;
     int mpi_workers_;
@@ -157,7 +157,7 @@ class MasterNode : public Node {
     
 public:
     MasterNode(size_t mpi_procs, SolverCore *sc) : Node(mpi_procs, sc), master_stub_(sc, this) {};
-    virtual ~MasterNode();
+    virtual ~MasterNode() {};
     virtual bool Run();
 
 private:
@@ -175,8 +175,8 @@ private:
 
 class WorkerNode : public Node {
 public:
-    WorkerNode(size_t mpi_procs, SolverCore *sc) : Node(mpi_procs_, sc), stopped_(true), worker_stub_(sc, this), sc_(sc) {};
-    virtual ~WorkerNode();
+    WorkerNode(size_t mpi_procs, SolverCore *sc) : Node(mpi_procs, sc), worker_stub_(sc, this), stopped_(true), sc_(sc) {};
+    virtual ~WorkerNode() {};
 
     virtual bool Run();
 

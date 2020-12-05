@@ -124,8 +124,8 @@ public:
     void RecoverState(size_t y_idx, size_t x_idx);
 
     // useful for splitting work, returns a 2 D sudoku mat
-    void GetElementAtSnapshot(size_t y_idx, size_t x_idx, Element **ret);
-    void GetElement(Element **ret);
+    void GetElementAtSnapshot(size_t y_idx, size_t x_idx, Element *ret);
+    void GetElement(Element *ret);
     // get the current number of feasible branches of the DFS tree, sizeof the stack
     // useful for splitting the work into a fixed number of subproblems
     size_t GetNumBranches() { return stack_.Size(); };
@@ -136,7 +136,7 @@ public:
 
     // only used when you know it's the correct answer for sure
     // (another process solved the problem and tell you the answer)
-    void SetAnswer(Element** answer);
+    void SetAnswer(Element* answer);
     void Stop() { status_ = SolverCoreStatus::KILLED; };
 
 private:

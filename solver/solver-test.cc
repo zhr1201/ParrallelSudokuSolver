@@ -154,7 +154,7 @@ void TestSerialSolver4() {
  
     ret = ss->Solve(ts2, answer);
     assert(ret);
-    assert(val.Validate(&answer, &ts));
+    assert(val.Validate(&answer, &ts2));
 }
 
 void TestSerialSolver5() {
