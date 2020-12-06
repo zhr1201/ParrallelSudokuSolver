@@ -12,7 +12,7 @@ namespace sudoku {
 
 void TestSolverMPI() {
     
-    const std::string in_csv = "test-data-6.csv";
+    const std::string in_csv = "test-data-7.csv";
  
     SSudoku ts(in_csv);
     SolverMPI *ss = SolverMPI::GetInstance();
@@ -33,13 +33,13 @@ void TestSolverMPI() {
         Validator val;
         assert(val.Validate(&answer, &ts));
     }
+    MPI_Barrier(MPI_COMM_WORLD);
 
 }
 
 }
 
 int main(int argc, char** argv) {
-    std::cout << "Start" << std::endl;
     MPI_Init(&argc, &argv);
     using namespace sudoku;
     TestSolverMPI();

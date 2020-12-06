@@ -1,6 +1,10 @@
+// Implementation of solver-mpi (Haoran Zhou)
+
 #include "solver/solver-mpi.h"
 
 #include "solver/sudoku-problem.h"
+
+// TODO!!!: TOO MESSY with all those ifndef. Probably should add a logger to avoid the ifndef NDEBUG macros
 
 namespace sudoku {
 
@@ -42,12 +46,16 @@ inline void CheckValid(uint_t num_workers) {
 }
 
 void WorkerProxy::PushProblem(Element *problem, Trial *trials, uint_t size, uint_t split) {
+
+#ifndef NDEBUG
     int mpi_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     std::cout << "Push from " << mpi_rank << " to worker " << prox_idx_ << std::endl;
     std::cout << "Push contents" << std::endl;
     PrintMat(problem);
+    std::cout << "Init stack size " << size << std::endl;
     PrintTrials(trials, size);
+#endif
 
     int header = PUSH_PROBLEM;
     
@@ -68,9 +76,11 @@ void WorkerProxy::PushProblem(Element *problem, Trial *trials, uint_t size, uint
 }
 
 void WorkerProxy::Stop() {
+#ifndef NDEBUG
     int mpi_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     std::cout << "Stop from " << mpi_rank << " to worker " << prox_idx_ << std::endl;
+#endif
     int header = STOP;
     uint_t counter = 0;
     memcpy(send_buffer_, &header, 4);  // header 
@@ -79,23 +89,23 @@ void WorkerProxy::Stop() {
 }
 
 void WorkerProxy::Kill(bool suc) {
+#ifndef NDEBUG
     int mpi_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     std::cout << "Kill from " << mpi_rank << " to worker " << prox_idx_ << " with " << suc << std::endl;
+#endif
     int header = KILL;
     uint_t counter = 0;
     memcpy(send_buffer_, &header, 4);  // header 
     counter += 4;
-    memcpy(send_buffer_ + counter, &suc, 4);  // header 
+    memcpy(send_buffer_ + counter, &suc, 1);  // header 
     counter += 4;
     MPI_Send(send_buffer_, counter, MPI_CHAR, prox_idx_, 0, MPI_COMM_WORLD);
 }
 
 void WorkerStub::PushProblem(char *msg) {
-
     int mpi_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
-    std::cout << "Get Push to " << mpi_rank << std::endl;
     SUDOKU_ASSERT(worker_node_->stopped_);
     worker_node_->stopped_ = false;  // get up and work!
 
@@ -110,11 +120,15 @@ void WorkerStub::PushProblem(char *msg) {
     uint_t counter = 0;
     memcpy(problem, msg + counter, MAT_SIZE);  // data mat
     counter += MAT_SIZE;
+
+#ifndef NDEBUG
+    std::cout << "Get Push to " << mpi_rank << std::endl;
     PrintMat((Element*)problem);
+#endif
+
     uint_t size;
     memcpy(&size, msg + counter, 4);  // size of initial stack
-    std::cout << size << std::endl;
- 
+
     counter += 4;
     for (uint_t i = 0; i < size; ++i) {
         trials[i].Deserialize(msg + counter);
@@ -124,8 +138,10 @@ void WorkerStub::PushProblem(char *msg) {
     memcpy(&split, msg + counter, 4);  // splits
     counter += 4;
 
-
+#ifndef NDEBUG
+    std::cout << "Rec stack size " << size << std::endl;
     PrintTrials(trials, size);
+#endif
 
     Element *problem_tmp = (Element*)problem;
     Trial *trial_tmp = trials;
@@ -143,8 +159,11 @@ void WorkerStub::PushProblem(char *msg) {
                                       split_size1, (Trial*)trial_buffer[1], split_size2);
         std::vector<WorkerProxy> *worker_vec_prox = worker_node_->worker_proxy_vec_;
         worker_prox_iter iter = worker_vec_prox->begin();
-        (iter + split)->PushProblem((Element*)split_buffer[1], (Trial*)trial_buffer[1], split_size2, split);
-        
+        (iter + split + mpi_rank - 1)->PushProblem((Element*)split_buffer[1], (Trial*)trial_buffer[1], split_size2, split);
+#ifndef NDEBUG
+        std::cout << "split size 1 " << split_size1 << std::endl;
+        std::cout << "split size 2 " << split_size2 << std::endl;
+#endif
         problem_tmp = (Element*)split_buffer[0];
         trial_tmp = trial_buffer[0];
         size_tmp = split_size1;
@@ -152,9 +171,11 @@ void WorkerStub::PushProblem(char *msg) {
 }
 
 void WorkerStub::Stop() {
+#ifndef NDEBUG
     int mpi_rank; 
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     std::cout << "Get stop to " << mpi_rank << std::endl;
+#endif
     worker_node_->stopped_ = true;
     sc_->Stop();
 }
@@ -164,24 +185,31 @@ void WorkerStub::Kill(char *msg) {
     // stopped nodes will send a msg to the master
     // and once master noticed that all worker has stopped
     // it will kill all workers
+#ifndef NDEBUG
     int mpi_rank; 
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     SUDOKU_ASSERT(worker_node_->stopped_);
+#endif
     bool ret;
-    memcpy(&ret, msg, 4);
+    memcpy(&ret, msg, 1);
+
+#ifndef NDEBUG
     std::cout << "Get kill to " << mpi_rank << " with" << ret << std::endl;
+#endif
 
     worker_node_->global_suc_ = ret;
 }
 
 
 void MainProxy::SendResults(bool success, Element *rst) {
+#ifndef NDEBUG
     int mpi_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     std::cout << "Send results from " << mpi_rank << " to main" << std::endl;
     std::cout << "Success " << success << std::endl;
     if (success)
         PrintMat(rst);
+#endif
 
     int header = SEND_RST;
     memcpy(send_buffer_, &header, 4);  // header
@@ -197,12 +225,17 @@ void MainProxy::SendResults(bool success, Element *rst) {
 bool MainStub::SendResults(char *msg) {
     bool solved;
     memcpy(&solved, msg, sizeof(bool));
-    
+
+#ifndef NDEBUG
     std::cout << "Get result "<< std::endl;
     std::cout << "Solved " << solved << std::endl;
+#endif
+
     if (solved) {
         memcpy(master_node_->rst_buffer_, msg + 4, sizeof(uint_t) * SIZE * SIZE);
+#ifndef NDEBUG
         PrintMat((Element*)master_node_->rst_buffer_);
+#endif
         return true;
     }
     return false;
@@ -258,9 +291,9 @@ bool Node::SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, 
     
     for (uint_t i = 0; i < num; ++i) {
         if (i < second_branch_size) {
-            trials1[i] = stack_contents[i];
+            trials2[i] = stack_contents[i];
         } else {
-            trials2[i - second_branch_size] = stack_contents[i]; 
+            trials1[i - second_branch_size] = stack_contents[i]; 
         }
     }
 
@@ -279,7 +312,9 @@ int Node::PreProcessMsg(char *msg_tot, char *&msg_body) {
 
 
 bool MasterNode::Run() {
+#ifndef NDEBUG
     std::cout << "Master node run" << std::endl;
+#endif
     if (!DistributeWork()) {
         if (sc_->GetStatus() == SolverCoreStatus::SUCCESS)
             return true;
@@ -336,14 +371,18 @@ bool MasterNode::CollectRst() {
     for (; iter != worker_proxy_vec_->end(); ++iter) {
         iter->Kill(ret);
     }
+#ifndef NDEBUG
     std::cout << "Main returned " << ret << std::endl;
+#endif
     return ret;
 }
 
 
 bool WorkerNode::Run() {
     // run untill killed by the master
+#ifndef NDEBUG 
     std::cout << "worker node run" << std::endl;
+#endif
     while (HandleRequest()) {
         // a problem was set or pushed by the master/worker
         if (!stopped_) {
@@ -354,7 +393,9 @@ bool WorkerNode::Run() {
             master_proxy_.SendResults(suc, (Element*)rst_buffer_);
         }
     }
+#ifndef NDEBUG
     std::cout << "worker returned " << global_suc_ << std::endl;
+#endif
     return global_suc_;
 }
 
@@ -421,20 +462,28 @@ bool WorkerNode::HandleRequest() {
         int msg_header = PreProcessMsg(rec_buffer_, msg_body);
         switch (msg_header) {
             case PUSH_PROBLEM:
+#ifndef NDEBUG
                 std::cout << "Push received size " << count <<  std::endl;
+#endif
                 worker_stub_.PushProblem(msg_body);
                 break;
             case STOP:
+#ifndef NDEBUG
                 std::cout << "Stop received size " << count << std::endl;
+#endif
                 worker_stub_.Stop();
                 break;
             case KILL:
+#ifndef NDEBUG
                 std::cout << "Kill received size " << count << std::endl;
+#endif
                 worker_stub_.Kill(msg_body);
                 ret = false;
                 break;
             default:
+#ifndef NDEBUG
                 std::cout << "Unkown request " << msg_header << std::endl;
+#endif
                 SUDOKU_ASSERT(false);  // shouldn't reach here
         }
     }
@@ -465,13 +514,11 @@ SolverMPI::SolverMPI() {
 
 bool SolverMPI::SolverInternal() {
     // only support calling this function once at this point
-
-    std::cout << "enter solver internal" << std::endl;
     static int counter = 0;
     SUDOKU_ASSERT(counter == 0);
-    node_->Run();
+    bool ret = node_->Run();
     ++counter;
-    return (sc_->GetStatus() == SolverCoreStatus::SUCCESS); 
+    return ret; 
 }
 
 }
