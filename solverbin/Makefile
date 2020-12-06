@@ -10,6 +10,8 @@ OBJFILES =
 
 TESTFILES =
 
+MPITESTFILES =
+
 ADDLIBS = 
 
 include ../makefiles/default_rules.mk
