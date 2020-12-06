@@ -8,35 +8,57 @@ namespace sudoku {
 SolverMPI *SolverMPI::singleton_ = nullptr;
 
 
+void PrintMat(Element *problem) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            std::cout << problem[IDX2OFFSET(i, j)];
+        }
+        std::cout << std::endl;
+    }
+}
+
+void PrintTrials(Trial *arr, uint_t size) {
+    for (uint_t i = 0; i < size; ++i) {
+        std::cout << "y " << arr[i].y_idx_ << " x " << arr[i].x_idx_ << " val " << arr[i].val_ << std::endl;
+    }
+}
+
+
 // doesn't support more than 16 workers cause communication overhead cross nodes would be way bigger
 // than solving it using serial solver
-inline void CheckValid(size_t num_workers) {
+inline void CheckValid(uint_t num_workers) {
     if (num_workers > MAX_WORKERS || num_workers < MIN_WORKERS) {
         throw std::runtime_error(
             "Only support num of workers smaller than 16 and greater than 2 (3 - 17 processes on total)\n");
     }
-    size_t i = num_workers;
+    uint_t i = num_workers;
     // power of 2 since work spliting here is like a binary tree
     while (i != 1) {
         if (i & 0x01) {
             throw std::runtime_error("only support num of workers (tot proc - 1) that is power of 2\n"); 
         }
-        i = i >> 2;
+        i = i >> 1;
     }
 }
 
-void WorkerProxy::PushProblem(Element *problem, Trial *trials, size_t size, size_t split) {
+void WorkerProxy::PushProblem(Element *problem, Trial *trials, uint_t size, uint_t split) {
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "Push from " << mpi_rank << " to worker " << prox_idx_ << std::endl;
+    std::cout << "Push contents" << std::endl;
+    PrintMat(problem);
+    PrintTrials(trials, size);
 
     int header = PUSH_PROBLEM;
     
-    size_t counter = 0;
+    uint_t counter = 0;
     memcpy(send_buffer_, &header, 4);  // header
     counter += 4;
     memcpy(send_buffer_ + counter, problem, MAT_SIZE);  // data mat
     counter += MAT_SIZE;
     memcpy(send_buffer_ + counter, &size, 4),  // size of initial stack
     counter += 4;
-    for (size_t i = 0; i < size; ++i) {
+    for (uint_t i = 0; i < size; ++i) {
         trials[i].Serialize(send_buffer_ + counter);
         counter += TRIAL_SIZE;
     }
@@ -46,23 +68,35 @@ void WorkerProxy::PushProblem(Element *problem, Trial *trials, size_t size, size
 }
 
 void WorkerProxy::Stop() {
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "Stop from " << mpi_rank << " to worker " << prox_idx_ << std::endl;
     int header = STOP;
-    size_t counter = 0;
+    uint_t counter = 0;
     memcpy(send_buffer_, &header, 4);  // header 
     counter += 4;
     MPI_Send(send_buffer_, counter, MPI_CHAR, prox_idx_, 0, MPI_COMM_WORLD);
 }
 
-void WorkerProxy::Kill() {
+void WorkerProxy::Kill(bool suc) {
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "Kill from " << mpi_rank << " to worker " << prox_idx_ << " with " << suc << std::endl;
     int header = KILL;
-    size_t counter = 0;
+    uint_t counter = 0;
     memcpy(send_buffer_, &header, 4);  // header 
+    counter += 4;
+    memcpy(send_buffer_ + counter, &suc, 4);  // header 
     counter += 4;
     MPI_Send(send_buffer_, counter, MPI_CHAR, prox_idx_, 0, MPI_COMM_WORLD);
 }
 
 void WorkerStub::PushProblem(char *msg) {
-    SUDOKU_ASSERT(!worker_node_->stopped_);
+
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "Get Push to " << mpi_rank << std::endl;
+    SUDOKU_ASSERT(worker_node_->stopped_);
     worker_node_->stopped_ = false;  // get up and work!
 
     Element problem[SIZE][SIZE];
@@ -70,32 +104,41 @@ void WorkerStub::PushProblem(char *msg) {
 
     Element split_buffer[2][SIZE][SIZE];
     Trial trial_buffer[2][N_NUM * N_GRID];
-    size_t split_size1;
-    size_t split_size2;
+    uint_t split_size1;
+    uint_t split_size2;
     
-    size_t counter = 0;
+    uint_t counter = 0;
     memcpy(problem, msg + counter, MAT_SIZE);  // data mat
     counter += MAT_SIZE;
-    size_t size;
-    memcpy(&size, msg + counter, 4),  // size of initial stack
+    PrintMat((Element*)problem);
+    uint_t size;
+    memcpy(&size, msg + counter, 4);  // size of initial stack
+    std::cout << size << std::endl;
+ 
     counter += 4;
-    for (size_t i = 0; i < size; ++i) {
-        trials[i].Deserialize(msg + counter + counter);
+    for (uint_t i = 0; i < size; ++i) {
+        trials[i].Deserialize(msg + counter);
         counter += TRIAL_SIZE;
     }
-    size_t split;
+    uint_t split;
     memcpy(&split, msg + counter, 4);  // splits
     counter += 4;
 
+
+    PrintTrials(trials, size);
+
     Element *problem_tmp = (Element*)problem;
     Trial *trial_tmp = trials;
-    size_t size_tmp = size;
+    uint_t size_tmp = size;
+    SSudoku sudoku_problem(problem_tmp);
+    sc_->SetProblem(sudoku_problem);
+    sc_->PushChildren(trial_tmp, size_tmp);
     // divide problem and push to peers
     while (split != 1) {
-        split = split >> 2;
+        split = split >> 1;
         SSudoku sudoku_problem(problem_tmp);
         sc_->SetProblem(sudoku_problem);
-        sc_->PushChildren(trials, size_tmp);
+        sc_->PushChildren(trial_tmp, size_tmp);
         worker_node_->SplitWorkToTwo((Element*)split_buffer[0], (Element*)split_buffer[1], (Trial*)trial_buffer[0],
                                       split_size1, (Trial*)trial_buffer[1], split_size2);
         std::vector<WorkerProxy> *worker_vec_prox = worker_node_->worker_proxy_vec_;
@@ -109,24 +152,41 @@ void WorkerStub::PushProblem(char *msg) {
 }
 
 void WorkerStub::Stop() {
+    int mpi_rank; 
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "Get stop to " << mpi_rank << std::endl;
     worker_node_->stopped_ = true;
     sc_->Stop();
 }
 
 
-void WorkerStub::Kill() {
+void WorkerStub::Kill(char *msg) {
     // stopped nodes will send a msg to the master
     // and once master noticed that all worker has stopped
     // it will kill all workers
+    int mpi_rank; 
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     SUDOKU_ASSERT(worker_node_->stopped_);
+    bool ret;
+    memcpy(&ret, msg, 4);
+    std::cout << "Get kill to " << mpi_rank << " with" << ret << std::endl;
+
+    worker_node_->global_suc_ = ret;
 }
 
 
 void MainProxy::SendResults(bool success, Element *rst) {
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    std::cout << "Send results from " << mpi_rank << " to main" << std::endl;
+    std::cout << "Success " << success << std::endl;
+    if (success)
+        PrintMat(rst);
+
     int header = SEND_RST;
     memcpy(send_buffer_, &header, 4);  // header
     memcpy(send_buffer_ + 4, &success, 1);  // bool sucess
-    size_t len = 8;
+    uint_t len = 8;
     if (success) {
         len += MAT_SIZE;
         memcpy(send_buffer_ + 8, rst, MAT_SIZE);  // data mat
@@ -137,18 +197,22 @@ void MainProxy::SendResults(bool success, Element *rst) {
 bool MainStub::SendResults(char *msg) {
     bool solved;
     memcpy(&solved, msg, sizeof(bool));
+    
+    std::cout << "Get result "<< std::endl;
+    std::cout << "Solved " << solved << std::endl;
     if (solved) {
-        memcpy(master_node_->rst_buffer_, msg + 4, sizeof(size_t) * SIZE * SIZE);
+        memcpy(master_node_->rst_buffer_, msg + 4, sizeof(uint_t) * SIZE * SIZE);
+        PrintMat((Element*)master_node_->rst_buffer_);
         return true;
     }
     return false;
 }
 
 
-bool Node::SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, size_t &size1, Trial *trials2, size_t &size2) {
+bool Node::SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, uint_t &size1, Trial *trials2, uint_t &size2) {
     Trial children[N_NUM];
     Trial stack_contents[N_NUM * N_GRID];
-    size_t y_idx, x_idx;
+    uint_t y_idx, x_idx;
     // split until just until exceeds the num of workers
     while (sc_->GetNumBranches() < 2) {
         if (sc_->GetStatus() == SolverCoreStatus::LAST_TRY_FAILED) {
@@ -158,7 +222,7 @@ bool Node::SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, 
 
         } else {
             // LAST_TRY_SUCCESS or UNATTENPED
-            size_t num = sc_->GetChildren(children);
+            uint_t num = sc_->GetChildren(children);
             sc_->PushChildren(children, num);
             sc_->GetNextTryIdx(y_idx, x_idx);
             sc_->TakeSnapshot(y_idx, x_idx);
@@ -174,25 +238,25 @@ bool Node::SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, 
     // each returned value means one direction to try, and generally the element with bigger index is
     // more deep in the search tree and requires less amount of work to complete
     // so first we try to split the work evenly and assign the remaining the the last partition
-    size_t num = sc_->GetTrialsInStack(stack_contents);
+    uint_t num = sc_->GetTrialsInStack(stack_contents);
     SUDOKU_ASSERT(num >= 2);
     // split the root of the unsearched parts to another node cause this is probably going to split the work
     // more evenly
-    size_t root_branch_counter = 1;
+    uint_t root_branch_counter = 1;
     Trial first = stack_contents[0];
-    for (size_t i = 1; i < num; ++i) {
+    for (uint_t i = 1; i < num; ++i) {
         Trial cur = stack_contents[i];
         if (first.y_idx_ != cur.y_idx_ || first.x_idx_ != cur.x_idx_)
             break;
         ++root_branch_counter;
     }
-    size_t first_branch_size = root_branch_counter / 2;
+    uint_t first_branch_size = root_branch_counter / 2;
 
-    size_t second_branch_size = root_branch_counter - first_branch_size;
+    uint_t second_branch_size = root_branch_counter - first_branch_size;
     size2 = second_branch_size;
     size1 = num - size2;
     
-    for (size_t i = 0; i < num; ++i) {
+    for (uint_t i = 0; i < num; ++i) {
         if (i < second_branch_size) {
             trials1[i] = stack_contents[i];
         } else {
@@ -215,6 +279,7 @@ int Node::PreProcessMsg(char *msg_tot, char *&msg_body) {
 
 
 bool MasterNode::Run() {
+    std::cout << "Master node run" << std::endl;
     if (!DistributeWork()) {
         if (sc_->GetStatus() == SolverCoreStatus::SUCCESS)
             return true;
@@ -228,8 +293,8 @@ bool MasterNode::DistributeWork() {
     Element split_buffer[2][SIZE][SIZE];
     Trial trial_buffer[2][N_NUM * N_GRID];
 
-    size_t first_split_size;
-    size_t second_split_size;
+    uint_t first_split_size;
+    uint_t second_split_size;
 
     if (!SplitWorkToTwo((Element*)split_buffer[0], (Element*)split_buffer[1], (Trial*)trial_buffer[0],
                         first_split_size, (Trial*)trial_buffer[1], second_split_size)) {
@@ -239,7 +304,7 @@ bool MasterNode::DistributeWork() {
         return false;
     }
 
-    size_t split_workers = mpi_workers_ >> 2;
+    uint_t split_workers = mpi_workers_ >> 1;
     worker_prox_iter iter = worker_proxy_vec_->begin();
     iter->PushProblem((Element*)split_buffer[0], (Trial*)trial_buffer[0], first_split_size, split_workers);
     (iter + split_workers)->PushProblem((Element*)split_buffer[1], (Trial*)trial_buffer[1], second_split_size, split_workers);
@@ -269,33 +334,47 @@ bool MasterNode::CollectRst() {
     }
     worker_prox_iter iter = worker_proxy_vec_->begin();
     for (; iter != worker_proxy_vec_->end(); ++iter) {
-        iter->Kill();
+        iter->Kill(ret);
     }
+    std::cout << "Main returned " << ret << std::endl;
     return ret;
 }
 
 
 bool WorkerNode::Run() {
     // run untill killed by the master
+    std::cout << "worker node run" << std::endl;
     while (HandleRequest()) {
         // a problem was set or pushed by the master/worker
         if (!stopped_) {
             Solve();
+            bool suc = (sc_->GetStatus() == SolverCoreStatus::SUCCESS);
+            if (suc)
+                sc_->GetElement((Element*)rst_buffer_);
+            master_proxy_.SendResults(suc, (Element*)rst_buffer_);
         }
-    }; 
-    return (sc_->GetStatus() == SolverCoreStatus::SUCCESS);
+    }
+    std::cout << "worker returned " << global_suc_ << std::endl;
+    return global_suc_;
 }
 
 bool WorkerNode::Solve() {
     SUDOKU_ASSERT(sc_->GetStatus() != SolverCoreStatus::UNSET);
     // tmp vars for return
     Trial children[N_NUM];
-    size_t y_idx, x_idx;
+    uint_t y_idx, x_idx;
+
+    sc_->GetNextTryIdx(y_idx, x_idx);
+    sc_->TakeSnapshot(y_idx, x_idx);
+    sc_->TryOneStep();
+    if ((sc_->GetStatus() == SolverCoreStatus::FAILED) |
+        (sc_->GetNumBranches() == SolverCoreStatus::LAST_TRY_FAILED))
+        return false;
 
     while (sc_->GetStatus() != SolverCoreStatus::FAILED &&
         sc_->GetStatus() != SolverCoreStatus::SUCCESS &&
         sc_->GetStatus() != SolverCoreStatus::KILLED) {
-
+ 
         if (sc_->GetStatus() == SolverCoreStatus::LAST_TRY_FAILED) {
             // backtrace
             sc_->GetNextTryIdx(y_idx, x_idx);
@@ -303,12 +382,14 @@ bool WorkerNode::Solve() {
 
         } else {
             // LAST_TRY_SUCCESS or UNATTENPED
-            size_t num = sc_->GetChildren(children);
+            uint_t num = sc_->GetChildren(children);
             sc_->PushChildren(children, num);
             sc_->GetNextTryIdx(y_idx, x_idx);
             sc_->TakeSnapshot(y_idx, x_idx);
         }
         HandleRequest();
+        if (sc_->GetStatus() == SolverCoreStatus::KILLED)
+            break;
         sc_->TryOneStep();
     }
     
@@ -316,6 +397,7 @@ bool WorkerNode::Solve() {
     if (sc_->GetStatus() == SolverCoreStatus::SUCCESS) {
         NotifyWorkerStop();
     }
+    stopped_ = true;
     return (sc_->GetStatus() == SolverCoreStatus::SUCCESS);
 }
 
@@ -339,16 +421,20 @@ bool WorkerNode::HandleRequest() {
         int msg_header = PreProcessMsg(rec_buffer_, msg_body);
         switch (msg_header) {
             case PUSH_PROBLEM:
+                std::cout << "Push received size " << count <<  std::endl;
                 worker_stub_.PushProblem(msg_body);
                 break;
             case STOP:
+                std::cout << "Stop received size " << count << std::endl;
                 worker_stub_.Stop();
                 break;
             case KILL:
-                worker_stub_.Kill();
+                std::cout << "Kill received size " << count << std::endl;
+                worker_stub_.Kill(msg_body);
                 ret = false;
                 break;
             default:
+                std::cout << "Unkown request " << msg_header << std::endl;
                 SUDOKU_ASSERT(false);  // shouldn't reach here
         }
     }
@@ -379,6 +465,8 @@ SolverMPI::SolverMPI() {
 
 bool SolverMPI::SolverInternal() {
     // only support calling this function once at this point
+
+    std::cout << "enter solver internal" << std::endl;
     static int counter = 0;
     SUDOKU_ASSERT(counter == 0);
     node_->Run();

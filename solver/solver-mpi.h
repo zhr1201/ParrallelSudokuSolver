@@ -23,7 +23,7 @@
 #define STOP 0x00000002
 // (4 bytes) header: two-phase shutdown phase1: sent from any process to any other precesses, nofity them to stop, report to master and handle remaining requests
 #define KILL 0x00000003
-// (4 bytes) header: two-phase shutdown phase2: sent from master to worker to tell them there are no remaining request to handle
+// (4 bytes) header + (4 bytes) bool sucess or not: two-phase shutdown phase2: sent from master to worker to tell them there are no remaining request to handle
 // using only one phase could cause worker A was shut down and worker B used a blocking call to send msg to a, which will result in a deadlock.
 #define ASK_FOR_WORK 0x00000004
 // (4 bytes) header
@@ -47,10 +47,9 @@ namespace sudoku {
 class WorkerProxy {
 public:
     WorkerProxy() {};
-    void SetIdx(size_t idx) { prox_idx_ = idx; };
-
+    void SetIdx(uint_t idx) { prox_idx_ = idx; };
     // initialize a problem, in respond to a AskForWork request, non_blocking
-    // void SetProblem(Element **problem, Trial *trials, size_t size);
+    // void SetProblem(Element **problem, Trial *trials, uint_t size);
 
     // difference is that push need to pass the problem to other nodes when necessary used in initial set up
     // if split is 1, there is no need to share the problem with another node
@@ -61,11 +60,11 @@ public:
     //     1) share the problem with 5 (split = 4)
     //     2) share the problem with 3 (split = 2)
     //     3) share the problem with 2 (split = 1)
-    void PushProblem(Element *problem, Trial *trials, size_t size, size_t split);
+    void PushProblem(Element *problem, Trial *trials, uint_t size, uint_t split);
 
     // tell the node to stop
     void Stop();
-    void Kill();
+    void Kill(bool suc);
     // ask for work, blocking call.
     // we only allow asking work from the rank that is one smaller than the current process (wrap around)
     // and we don't allow asking for mulitple times since this will introduce too much communication
@@ -76,7 +75,7 @@ public:
     // void NoitifyExit();
 
 private:
-    size_t prox_idx_;
+    uint_t prox_idx_;
     char send_buffer_[MAX_WORKER_MSG_LEN];
     DISALLOW_CLASS_COPY_AND_ASSIGN(WorkerProxy);
 };
@@ -92,7 +91,7 @@ public:
     // void SetProblem();
     void PushProblem(char* msg);
     void Stop();
-    void Kill();
+    void Kill(char* msg);
 
 private:
     // if C ask work from B and B has finished all its work, we don't
@@ -108,6 +107,7 @@ private:
 
 class MainProxy {
 public:
+    MainProxy() {};
     void SendResults(bool success, Element *rst);
 private:
     char send_buffer_[MAX_MAIN_MSG_LEN];
@@ -128,10 +128,10 @@ private:
 
 class Node {
 public:
-    Node(size_t mpi_procs, SolverCore *sc) : 
+    Node(uint_t mpi_procs, SolverCore *sc) : 
             mpi_procs_(mpi_procs), mpi_workers_(mpi_procs - 1),
             worker_proxy_vec_(new std::vector<WorkerProxy>(mpi_workers_)), sc_(sc){
-        for (size_t i = 0; i < mpi_workers_; ++i) {
+        for (uint_t i = 0; i < mpi_workers_; ++i) {
             // mpi index one bigger than worker index
             (*worker_proxy_vec_)[i].SetIdx(i + 1);
         }
@@ -141,7 +141,7 @@ public:
 
 protected:
 
-    bool SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, size_t &size1, Trial *trials2, size_t &size2);
+    bool SplitWorkToTwo(Element *problem1, Element *problem2, Trial *trials1, uint_t &size1, Trial *trials2, uint_t &size2);
     // determine msg type and return a pointer to the msg body
     int PreProcessMsg(char *msg_tot, char *&msg_body);
 
@@ -156,7 +156,7 @@ protected:
 class MasterNode : public Node {
     
 public:
-    MasterNode(size_t mpi_procs, SolverCore *sc) : Node(mpi_procs, sc), master_stub_(sc, this) {};
+    MasterNode(uint_t mpi_procs, SolverCore *sc) : Node(mpi_procs, sc), master_stub_(sc, this) {};
     virtual ~MasterNode() {};
     virtual bool Run();
 
@@ -175,7 +175,8 @@ private:
 
 class WorkerNode : public Node {
 public:
-    WorkerNode(size_t mpi_procs, SolverCore *sc) : Node(mpi_procs, sc), worker_stub_(sc, this), stopped_(true), sc_(sc) {};
+    WorkerNode(uint_t mpi_procs, SolverCore *sc) : 
+            Node(mpi_procs, sc), worker_stub_(sc, this), stopped_(true), sc_(sc), global_suc_(false) {};
     virtual ~WorkerNode() {};
 
     virtual bool Run();
@@ -186,13 +187,16 @@ private:
     void NotifyWorkerStop();
     bool Solve();
 
-    inline size_t NextWorkerIdx() const;
-    inline size_t PrevWorkerIdx() const;
+    inline uint_t NextWorkerIdx() const;
+    inline uint_t PrevWorkerIdx() const;
 
     WorkerStub worker_stub_;
+    MainProxy master_proxy_;
+    Element rst_buffer_[SIZE][SIZE];
     char rec_buffer_[MAX_WORKER_MSG_LEN];
     bool stopped_;
     SolverCore *sc_;
+    bool global_suc_;
 
     friend class WorkerStub;
     DISALLOW_CLASS_COPY_AND_ASSIGN(WorkerNode);

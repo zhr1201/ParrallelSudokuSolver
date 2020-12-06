@@ -11,24 +11,35 @@ namespace sudoku {
 
 
 void TestSolverMPI() {
-    const std::string in_csv = "test-data-1.csv";
+    
+    const std::string in_csv = "test-data-6.csv";
+ 
     SSudoku ts(in_csv);
     SolverMPI *ss = SolverMPI::GetInstance();
     SudokuAnswer answer;
-    MPI_Barrier(MPI_COMM_WORLD);
-    double start = MPI_Wtime();
-    bool ret = ss->Solve(ts, answer);
-    double end = MPI_Wtime();
-    std::cout << "Take " << end - start << " to solve" << std::endl;
-    assert(ret);
 
-    Validator val;
-    assert(val.Validate(&answer, &ts));
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start = 0;
+    if (mpi_rank == 0)
+        start = MPI_Wtime();
+    bool ret = ss->Solve(ts, answer);
+    if (mpi_rank == 0) {
+        double end = MPI_Wtime();
+        std::cout << "Take " << end - start << " to solve" << std::endl;
+            
+        assert(ret);
+        Validator val;
+        assert(val.Validate(&answer, &ts));
+    }
+
 }
 
 }
 
 int main(int argc, char** argv) {
+    std::cout << "Start" << std::endl;
     MPI_Init(&argc, &argv);
     using namespace sudoku;
     TestSolverMPI();

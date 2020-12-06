@@ -15,6 +15,7 @@
 #include <numeric>
 #include <cfloat>
 #include <cstdint>
+#include <stdint.h>
 #include <iostream>
 #include <fstream>
 #include <stdint.h>
@@ -60,7 +61,8 @@ typedef unsigned long long u_longlong_t;
 
 
 // Global alias
-using Element = size_t;
+using uint_t = uint32_t;
+using Element = uint_t;
 using SudokuMat = std::vector<std::vector<Element>>;
 
 

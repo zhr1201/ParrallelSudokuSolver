@@ -24,8 +24,8 @@ void TestProblemStateFixedByConstrant() {
     const std::string in_csv = "test-data-2.csv";
     SSudoku ts(in_csv);
     ProblemStateBase ps(&ts);
-    size_t x_idx, y_idx;
-    size_t n_pos = ps.GetIdxWithMinPossibility(x_idx, y_idx);
+    uint_t x_idx, y_idx;
+    uint_t n_pos = ps.GetIdxWithMinPossibility(x_idx, y_idx);
     assert(n_pos == 1);
     assert(x_idx == 0);
     assert(y_idx == 0);
@@ -35,7 +35,7 @@ void TestProblemStateFixedByPeers() {
     const std::string in_csv = "test-data-3.csv";
     SSudoku ts(in_csv);
     ProblemStateBase ps(&ts);
-    size_t x_idx, y_idx;
+    uint_t x_idx, y_idx;
     Element val;
     bool ret = ps.GetIdxFixedByPeers(x_idx, y_idx, val);
     assert(ret);
@@ -54,7 +54,7 @@ void TestProblemStateCopyConstructer() {
     assert(!ps_copy.CheckSolved());
     ps_copy.Set(8, 7, 7);
 
-    size_t y_idx, x_idx;
+    uint_t y_idx, x_idx;
     Element ele;
     assert(ps_copy.GetIdxFixedByPeers(y_idx, x_idx, ele));
     assert(y_idx == 8);
@@ -72,7 +72,7 @@ void TestProblemStateAssignOps() {
     ProblemStateBase ps(&ts);
 
     ProblemStateBase ps2 = ps;
-    size_t x_idx, y_idx;
+    uint_t x_idx, y_idx;
     Element val;
     bool ret = ps2.GetIdxFixedByPeers(x_idx, y_idx, val);
     assert(!ret);
