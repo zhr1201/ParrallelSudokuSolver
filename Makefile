@@ -42,11 +42,16 @@ distclean: clean
 
 test: $(addsuffix /test, $(SUBDIRS_LIB))
 
+testmpi: $(addsuffix /mpitest, $(SUBDIRS_LIB))
+
 # Define an implicit rule, expands to e.g.:
 #  base/test: base
 #     $(MAKE) -C base test
 %/test: % mklibdir
 	$(MAKE) -C $< test
+
+%/mpitest: % mklibdir
+	$(MAKE) -C $< mpitest
 
 util/.depend.mk:
 	$(MAKE) depend

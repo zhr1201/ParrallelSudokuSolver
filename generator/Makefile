@@ -2,7 +2,9 @@ include ../sudoku.mk
 
 TESTFILES = generator-test
 
-OBJFILES = file-parser.o generator.o
+MPITESTFILES =
+
+OBJFILES = file-parser.o generator.o sudoku-problem.o
 
 LIBNAME = sudoku-generator
 
