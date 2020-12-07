@@ -54,7 +54,7 @@ class ProblemStateBase {
         SUDOKU_ASSERT(base <= tmp && tmp < limit);
         dst = (T*)tmp;
     }
- 
+
     struct ElementState {
 
         ElementState() :
@@ -68,12 +68,12 @@ class ProblemStateBase {
         void UnSubscribe(ElementState *state);
         // subsubscribe the current node from all peers
         void UnSubcribeAllForCur();
-        
+
         // return 0 if not solvable same as SetElement and PropConstraints
         // once the value is set, tell its peers
         bool NotifySubscriberConstraints();
         bool UpdateConstraints(Element val);
-        // once the possiblity of a val is ruled out, tell its peers 
+        // once the possiblity of a val is ruled out, tell its peers
         bool NotifySubscriberPossibilities(Element val);
         bool UpdatePossibilities(Element val);
 
@@ -95,12 +95,12 @@ class ProblemStateBase {
         // the numbers we can fill in the sudoku matrix
         uint_t peer_possibilities_array_[N_NUM];
         // the value is set to x if peer_possibilities_array_[x] == 0
-        // but the logic of setting val_ is left for the solver class 
+        // but the logic of setting val_ is left for the solver class
         Element val_fix_;
-        
+
         //std::bitset<N_NUM> constraints_;
         // faster access than bitset
-        bool constraints_[N_NUM]; 
+        bool constraints_[N_NUM];
 
         // use observer design pattern to broadcast update information
         // the list support O(1) time lookup, deletion, insertion
@@ -108,7 +108,7 @@ class ProblemStateBase {
         ElementListNode *head_;
         ElementListNode *tail_;
         ElementListNode subscriber_list_[N_PEERS];
-        
+
         // for finding the idx of a particular subsciber in subscriber_list_ in O(1) time
         // used as a unordered_map but probably faster
         // very expensive to send the array over the network cause it takes O(N^2) space
@@ -121,8 +121,8 @@ class ProblemStateBase {
     };
 
 
-public:    
-    // start of ProblemStateBase def 
+public:
+    // start of ProblemStateBase def
     ProblemStateBase() {};
 
     ProblemStateBase(const Solvable *problem);
@@ -185,7 +185,7 @@ private:
     void Clear();
     void SetProblem(const Solvable *problem);
 
-    ElementState ele_arr_[N_GRID];    
+    ElementState ele_arr_[N_GRID];
     bool valid_;
 
     // list for unset elements

@@ -63,7 +63,7 @@ void ProblemStateBase::ElementState::UnSubcribeAllForCur() {
     ElementListNode *cur = head_;
     while (cur != nullptr) {
         cur->state_->UnSubscribe(this);
-        cur = cur->next_; 
+        cur = cur->next_;
     }
 }
 
@@ -169,7 +169,7 @@ void ProblemStateBase::ElementState::Clear() {
 
 // an expensive setup O(N ^ 3), but reduce repeatedly computing active peers later
 ProblemStateBase::ProblemStateBase(const Solvable *problem) :
-         ele_arr_(), valid_(true), ele_list_(), head_(nullptr), tail_(nullptr) {  
+         ele_arr_(), valid_(true), ele_list_(), head_(nullptr), tail_(nullptr) {
     SetProblem(problem);
 }
 
@@ -226,7 +226,7 @@ void ProblemStateBase::Clear() {
         for (uint_t j = 0; j < SIZE; ++j) {
             uint_t offset = IDX2OFFSET(i, j);
             ele_list_[offset].state_ = nullptr;
-            ele_list_[offset].prev_ = nullptr; 
+            ele_list_[offset].prev_ = nullptr;
             ele_list_[offset].next_ = nullptr;
             ele_arr_[offset].Clear();
         }
@@ -257,9 +257,9 @@ void ProblemStateBase::SetFromAnother(const ProblemStateBase &other) {
     CopyPointer(tail_, other.tail_, offset, add, base_addr, limit);
     for (uint_t i = 0; i < N_GRID; ++i) {
         CopyPointer(ele_list_[i].next_, other.ele_list_[i].next_, offset, add, base_addr, limit);
-        CopyPointer(ele_list_[i].prev_, other.ele_list_[i].prev_, offset, add, base_addr, limit); 
+        CopyPointer(ele_list_[i].prev_, other.ele_list_[i].prev_, offset, add, base_addr, limit);
         CopyPointer(ele_list_[i].state_, other.ele_list_[i].state_, offset, add, base_addr, limit);
-        
+
         ele_arr_[i].SetFromAnother(other.ele_arr_[i], offset, add, base_addr, limit);
     }
 }
@@ -336,7 +336,7 @@ uint_t ProblemStateBase::GetIdxWithMinPossibility(uint_t &y_idx, uint_t &x_idx) 
     else {
         return 0;
     }
-    
+
 }
 
 bool ProblemStateBase::GetIdxFixedByPeers(uint_t &y_idx, uint_t &x_idx, Element &val) {

@@ -8,8 +8,8 @@ BINFILES = generate-sudoku
 
 OBJFILES =
 
-TESTFILES =
+TESTFILES = generator-test
 
-ADDLIBS = 
+ADDLIBS = ../generator/sudoku-generator.a ../util/sudoku-util.a
 
 include ../makefiles/default_rules.mk

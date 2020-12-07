@@ -52,6 +52,9 @@ typedef unsigned long long u_longlong_t;
 #define N_PEERS 20
 
 
+// Generator macros
+#define NUM_PERMUTE 10
+
 // MPI Settings
 #define MAX_WORKERS 16
 #define MIN_WORKERS 2
