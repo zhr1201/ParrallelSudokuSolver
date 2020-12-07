@@ -69,15 +69,15 @@ void TestIOConsitency() {
         }
     }
 
-    // std::vector<Solvable*>::iterator iter = sudoku_arr.begin();
-    // for (; iter != sudoku_arr.end(); ++iter) {
-    //     free(*iter);
-    // }
+    std::vector<Solvable*>::iterator iter = sudoku_arr.begin();
+    for (; iter != sudoku_arr.end(); ++iter) {
+        free(*iter);
+    }
 
-    // iter = read_vec->begin();
-    // for (; iter != read_vec->end(); ++iter) {
-    //     free(*iter);
-    // }
+    iter = read_vec->begin();
+    for (; iter != read_vec->end(); ++iter) {
+        free(*iter);
+    }
 }
 
 }
