@@ -8,32 +8,32 @@
 namespace sudoku {
 
 
-inline size_t ProblemStateBase::ElementState::GetIdxInSubList(size_t y_idx, size_t x_idx) {
+inline uint_t ProblemStateBase::ElementState::GetIdxInSubList(uint_t y_idx, uint_t x_idx) {
     return subscriber_idx_[IDX2OFFSET(y_idx, x_idx)];
 }
 
 
 
 void ProblemStateBase::ElementState::ConstructSubscriberIdx() {
-    size_t blk_y_start = y_idx_ / SUB_SIZE * SUB_SIZE;
-    size_t blk_x_start = x_idx_ / SUB_SIZE * SUB_SIZE;
+    uint_t blk_y_start = y_idx_ / SUB_SIZE * SUB_SIZE;
+    uint_t blk_x_start = x_idx_ / SUB_SIZE * SUB_SIZE;
+    
+    uint_t idx_counter = 0;
 
-    size_t idx_counter = 0;
-
-    for (size_t i = 0; i < SIZE; ++i) {
+    for (uint_t i = 0; i < SIZE; ++i) {
         if (i != x_idx_) {
             subscriber_idx_[IDX2OFFSET(y_idx_, i)] = idx_counter++;
         }
     }
 
-    for (size_t i = 0; i < SIZE; ++i) {
+    for (uint_t i = 0; i < SIZE; ++i) {
         if (i != y_idx_) {
             subscriber_idx_[IDX2OFFSET(i, x_idx_)] = idx_counter++;
         }
     }
 
-    for (size_t i = blk_y_start; i < blk_y_start + SUB_SIZE; ++i) {
-        for (size_t j = blk_x_start; j < blk_x_start + SUB_SIZE; ++j) {
+    for (uint_t i = blk_y_start; i < blk_y_start + SUB_SIZE; ++i) {
+        for (uint_t j = blk_x_start; j < blk_x_start + SUB_SIZE; ++j) {
             if (i != y_idx_ && j != x_idx_) {
                 subscriber_idx_[IDX2OFFSET(i, j)] = idx_counter++;
             }
@@ -42,7 +42,7 @@ void ProblemStateBase::ElementState::ConstructSubscriberIdx() {
 }
 
 void ProblemStateBase::ElementState::Subscribe(ElementState* state) {
-    size_t idx = GetIdxInSubList(state->y_idx_, state->x_idx_);
+    uint_t idx = GetIdxInSubList(state->y_idx_, state->x_idx_);
     ElementListNode *tmp = &subscriber_list_[idx];
     SUDOKU_ASSERT(tmp->state_ == nullptr);
     tmp->state_ = state;
@@ -52,7 +52,7 @@ void ProblemStateBase::ElementState::Subscribe(ElementState* state) {
 void ProblemStateBase::ElementState::UnSubscribe(ElementState *state) {
     SUDOKU_ASSERT(this != state);
     SUDOKU_ASSERT(this->val_ == UNFILLED);
-    size_t idx = GetIdxInSubList(state->y_idx_, state->x_idx_);
+    uint_t idx = GetIdxInSubList(state->y_idx_, state->x_idx_);
     ElementListNode *tmp = &subscriber_list_[idx];
     SUDOKU_ASSERT(tmp->state_ != nullptr);
     RemoveFromList(head_, tail_, tmp);
@@ -124,22 +124,22 @@ void ProblemStateBase::ElementState::SetFromAnother(const ElementState &other, u
     x_idx_ = other.x_idx_;
     y_idx_ = other.y_idx_;
     n_possibilities_ = other.n_possibilities_;
-    memcpy(peer_possibilities_array_, other.peer_possibilities_array_, sizeof(size_t) * N_NUM);
+    memcpy(peer_possibilities_array_, other.peer_possibilities_array_, sizeof(uint_t) * N_NUM);
     val_fix_ = other.val_fix_;
     memcpy(constraints_, other.constraints_, sizeof(bool) * N_NUM);
 
     CopyPointer(head_, other.head_, offset, add, base, limit);
     CopyPointer(tail_, other.tail_, offset, add, base, limit);
-    for (size_t i = 0; i < N_PEERS; ++i) {
+    for (uint_t i = 0; i < N_PEERS; ++i) {
         CopyPointer(subscriber_list_[i].state_, other.subscriber_list_[i].state_, offset, add, base, limit);
         CopyPointer(subscriber_list_[i].prev_, other.subscriber_list_[i].prev_, offset, add, base, limit);
         CopyPointer(subscriber_list_[i].next_, other.subscriber_list_[i].next_, offset, add, base, limit);
     }
-    memcpy(subscriber_idx_, other.subscriber_idx_, sizeof(size_t) * N_GRID);
+    memcpy(subscriber_idx_, other.subscriber_idx_, sizeof(uint_t) * N_GRID);
 }
 
 bool ProblemStateBase::ElementState::NotifyTaken(Element val) {
-    for (size_t i = 1; i < N_NUM; ++i) {
+    for (uint_t i = 1; i < N_NUM; ++i) {
         if (i != val && !constraints_[i]) {
             if (!NotifySubscriberPossibilities(i))
                 return false;
@@ -158,7 +158,7 @@ void ProblemStateBase::ElementState::Clear() {
     std::fill(constraints_, constraints_ + N_NUM, false);
     head_ = nullptr;
     tail_ = nullptr;
-    for (size_t i = 0; i < N_PEERS; ++i) {
+    for (uint_t i = 0; i < N_PEERS; ++i) {
         subscriber_list_[i].prev_ = nullptr;
         subscriber_list_[i].state_ = nullptr;
         subscriber_list_[i].next_ = nullptr;
@@ -182,9 +182,9 @@ void ProblemStateBase::ResetProblem(const Solvable *problem) {
 void ProblemStateBase::SetProblem(const Solvable *problem) {
     Clear();
     mutex_.Lock();
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
-            size_t offset = IDX2OFFSET(i, j);
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            uint_t offset = IDX2OFFSET(i, j);
             ele_list_[offset].state_ = &ele_arr_[offset];
             ele_arr_[offset].y_idx_ = i;
             ele_arr_[offset].x_idx_ = j;
@@ -193,16 +193,16 @@ void ProblemStateBase::SetProblem(const Solvable *problem) {
         }
     }
 
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
             mutex_.Unlock();
             SubscribePeers(i, j);
             mutex_.Lock();
         }
     }
 
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
             Element tmp = problem->GetElement(j, i);
             if (tmp != UNFILLED) {
                 mutex_.Unlock();
@@ -222,9 +222,9 @@ void ProblemStateBase::Clear() {
     valid_ = true;
     head_ = nullptr;
     tail_ = nullptr;
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
-            size_t offset = IDX2OFFSET(i, j);
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            uint_t offset = IDX2OFFSET(i, j);
             ele_list_[offset].state_ = nullptr;
             ele_list_[offset].prev_ = nullptr;
             ele_list_[offset].next_ = nullptr;
@@ -255,7 +255,7 @@ void ProblemStateBase::SetFromAnother(const ProblemStateBase &other) {
 
     CopyPointer(head_, other.head_, offset, add, base_addr, limit);
     CopyPointer(tail_, other.tail_, offset, add, base_addr, limit);
-    for (size_t i = 0; i < N_GRID; ++i) {
+    for (uint_t i = 0; i < N_GRID; ++i) {
         CopyPointer(ele_list_[i].next_, other.ele_list_[i].next_, offset, add, base_addr, limit);
         CopyPointer(ele_list_[i].prev_, other.ele_list_[i].prev_, offset, add, base_addr, limit);
         CopyPointer(ele_list_[i].state_, other.ele_list_[i].state_, offset, add, base_addr, limit);
@@ -265,26 +265,26 @@ void ProblemStateBase::SetFromAnother(const ProblemStateBase &other) {
 }
 
 
-void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
+void ProblemStateBase::SubscribePeers(uint_t y_idx, uint_t x_idx) {
     Lock lock(mutex_);
     ElementState *cur = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
-    size_t blk_y_start = y_idx / SUB_SIZE * SUB_SIZE;
-    size_t blk_x_start = x_idx / SUB_SIZE * SUB_SIZE;
-
-    for (size_t i = 0; i < SIZE; ++i) {
+    uint_t blk_y_start = y_idx / SUB_SIZE * SUB_SIZE;
+    uint_t blk_x_start = x_idx / SUB_SIZE * SUB_SIZE;
+    
+    for (uint_t i = 0; i < SIZE; ++i) {
         if (i != x_idx) {
             cur->Subscribe(&ele_arr_[IDX2OFFSET(y_idx, i)]);
         }
     }
 
-    for (size_t i = 0; i < SIZE; ++i) {
+    for (uint_t i = 0; i < SIZE; ++i) {
         if (i != y_idx) {
             cur->Subscribe(&ele_arr_[IDX2OFFSET(i, x_idx)]);
         }
     }
 
-    for (size_t i = blk_y_start; i < blk_y_start + SUB_SIZE; ++i) {
-        for (size_t j = blk_x_start; j < blk_x_start + SUB_SIZE; ++j) {
+    for (uint_t i = blk_y_start; i < blk_y_start + SUB_SIZE; ++i) {
+        for (uint_t j = blk_x_start; j < blk_x_start + SUB_SIZE; ++j) {
             if (i != y_idx && j != x_idx) {
                 cur->Subscribe(&ele_arr_[IDX2OFFSET(i, j)]);
             }
@@ -292,7 +292,7 @@ void ProblemStateBase::SubscribePeers(size_t y_idx, size_t x_idx) {
     }
 }
 
-bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
+bool ProblemStateBase::Set(uint_t y_idx, uint_t x_idx, Element val) {
     Lock lock(mutex_);
     ElementState *node = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
     SUDOKU_ASSERT(node->val_ == UNFILLED);
@@ -311,7 +311,15 @@ bool ProblemStateBase::Set(size_t y_idx, size_t x_idx, Element val) {
     return ret;
 }
 
-size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) {
+
+// only used when you know it's correct for sure
+void ProblemStateBase::SetAnswer(uint_t y_idx, uint_t x_idx, Element val) {
+    Lock lock(mutex_);
+    ElementState *node = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
+    node->val_ = val;
+}
+
+uint_t ProblemStateBase::GetIdxWithMinPossibility(uint_t &y_idx, uint_t &x_idx) {
     Lock lock(mutex_);
     ElementListNode *cur = head_;
     ElementListNode *min = head_;
@@ -331,7 +339,7 @@ size_t ProblemStateBase::GetIdxWithMinPossibility(size_t &y_idx, size_t &x_idx) 
 
 }
 
-bool ProblemStateBase::GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element &val) {
+bool ProblemStateBase::GetIdxFixedByPeers(uint_t &y_idx, uint_t &x_idx, Element &val) {
     Lock lock(mutex_);
     ElementListNode *cur = head_;
     while (cur != nullptr) {
@@ -346,16 +354,16 @@ bool ProblemStateBase::GetIdxFixedByPeers(size_t &y_idx, size_t &x_idx, Element 
     return false;
 }
 
-size_t ProblemStateBase::GetConstraints(size_t y_idx, size_t x_idx, bool *ret) {
+uint_t ProblemStateBase::GetConstraints(uint_t y_idx, uint_t x_idx, bool *ret) {
     Lock lock(mutex_);
     const ElementState *node = &ele_arr_[IDX2OFFSET(y_idx, x_idx)];
     memcpy(ret, node->constraints_, sizeof(bool) * N_NUM);
     return node->n_possibilities_;
 }
 
-bool ProblemStateBase::SetConstraint(size_t y_idx, size_t x_idx, Element val) {
+bool ProblemStateBase::SetConstraint(uint_t y_idx, uint_t x_idx, Element val) {
     Lock lock(mutex_);
-    size_t idx = IDX2OFFSET(y_idx, x_idx);
+    uint_t idx = IDX2OFFSET(y_idx, x_idx);
     bool ret = ele_arr_[idx].UpdateConstraints(val);
     if (!ret)
         valid_ = false;

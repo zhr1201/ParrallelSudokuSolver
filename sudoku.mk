@@ -1,6 +1,6 @@
 # Toolchain configuration
 
-CXX = g++
+CXX = mpic++
 AR = ar
 AS = as
 RANLIB = ranlib

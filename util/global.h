@@ -15,6 +15,7 @@
 #include <numeric>
 #include <cfloat>
 #include <cstdint>
+#include <stdint.h>
 #include <iostream>
 #include <fstream>
 #include <stdint.h>
@@ -50,13 +51,22 @@ typedef unsigned long long u_longlong_t;
 #define N_NUM 10
 #define N_PEERS 20
 
+
+// Generator macros
+#define NUM_PERMUTE 10
+
+// MPI Settings
+#define MAX_WORKERS 16
+#define MIN_WORKERS 2
+
 // macro functions
 #define IDX2OFFSET(Y, X)  (Y * SIZE + X)
 
 
 // Global alias
-using Element = size_t;
-using SudokuMat = std::vector<std::vector<Element> >;
+using uint_t = uint32_t;
+using Element = uint_t;
+using SudokuMat = std::vector<std::vector<Element>>;
 
 
 #endif // _GLOBAL_H_

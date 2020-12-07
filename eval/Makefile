@@ -5,6 +5,8 @@ include ../sudoku.mk
 
 TESTFILES = 
 
+MPITESTFILES =
+
 OBJFILES = eval-controller.o 
 
 LIBNAME = sudoku-eval
