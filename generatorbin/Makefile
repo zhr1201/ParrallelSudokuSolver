@@ -8,7 +8,7 @@ BINFILES = generate-sudoku
 
 OBJFILES =
 
-TESTFILES =
+TESTFILES = generator-test
 
 ADDLIBS = ../generator/sudoku-generator.a
 

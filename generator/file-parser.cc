@@ -1,46 +1,68 @@
 // Read .csv file and save the data as Sudoku Array
 
-#include "../itf/solvable-itf.h"
-#include "file-parser.h"
-#include "../util/string-utils.h"
+
 #include <vector>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 
+#include "itf/solvable-itf.h"
+#include "generator/file-parser.h"
+#include "util/string-utils.h"
+
 
 namespace sudoku {
 
-int data[9][9];
 
-size_t FileParser::GetElement(size_t x_idx, size_t y_idx) {
-    return data[y_idx][x_idx];
+void FileParser::WriteToFile(std::string out_file, std::vector<Solvable*> *in_vec) {
+    std::ofstream o_fs(out_file);
+    item_iter iter = in_vec->begin();
+    int count = 0;
+    for (; iter != in_vec->end(); ++iter) {
+        WriteOne(*iter, o_fs);
+        ++count;
+    }
+    std::cout << "wrote " << count << std::endl;
 }
 
-void FileParser::readFromCSV(std::string inputFile) {
+void FileParser::ReadFromFile(std::string input_file, std::vector<Solvable*> *&ret) {
+
     //read input file
-    std::vector< std::vector<std::string> > strData;
-    std::string line, field;
-    std::vector<std::string> v;
-    std::ifstream in(inputFile);
-    while (getline(in,line)) {
-        v.clear();
-        std::stringstream ss(line);
-        while (getline(ss,field,',')) {
-            v.push_back(field);  // add each field to the 1D array
-        }
-    strData.push_back(v);  // add the 1D array to the 2D array
+    ret = new std::vector<Solvable*>();
+    std::ifstream i_fs(input_file);
+    Sudoku *tmp = nullptr;
+    int count = 0;
+    while(ReadOne(tmp, i_fs)) {
+        ret->push_back(tmp);
+        count++;
     }
-    printf("\nThe problem loaded is:\n");
-    for (int i=0;i<9;i++) {
-        for (int j=0;j<9;j++) {
-            std::stringstream k(strData[i][j]);
-            k >> data[i][j];
-            printf("%d", data[i][j]);
+    std::cout << "read " << count << std::endl;
+}
+
+void FileParser::WriteOne(Solvable *data, std::ofstream &file) {
+    file << std::endl;
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            file << data->GetElement(j, i) << ',';
         }
-        printf("\n");
+        file << std::endl;
     }
+}
+
+bool FileParser::ReadOne(Sudoku *&data, std::ifstream &file) {
+    std::string line;
+    if (!std::getline(file, line))
+        return false;
+
+    data = new Sudoku();
+    for (uint_t i = 0; i < SIZE; ++i) {
+        std::getline(file, line);
+        std::vector<std::string> sep_num = split(line, ",");
+        for (uint_t j = 0; j < SIZE; ++j) {
+            data->data_[i][j] = stoi(sep_num[j]);
+        }
+    }
+    return true;
 }
 
 }

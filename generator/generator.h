@@ -19,10 +19,10 @@ public:
 
 private:
     void CreateRandomSudoku();
-    void Rotate();
-    void Flip();
-    void FlipByThreeRow();
-    void FlipByThreeCol();
+    void SwapHorizontally();
+    void SwapVertically();
+    void FlipMain();
+    void FlipMinor();
 
     Element seed_[SIZE][SIZE];
     Element new_arr_[SIZE][SIZE];  // buffer for permutation
