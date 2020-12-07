@@ -40,14 +40,15 @@ endif
 	$(MAKE) -C ${@D} ${@F}
 
 clean:
-	-rm -f *.o *.a *.so $(TESTFILES) $(BINFILES) $(TESTOUTPUTS) tmp* *.tmp *.testlog
+	-rm -f *.o *.a *.so $(TESTFILES) $(MPITESTFILES) $(BINFILES) $(TESTOUTPUTS) tmp* *.tmp *.testlog
 
 distclean: clean
 	-rm -f .depend.mk
 
 $(TESTFILES): $(LIBFILE) $(XDEPENDS)
+$(MPITESTFILES): $(LIBFILE) $(XDEPENDS)
 
-test_compile: $(TESTFILES)
+test_compile: $(TESTFILES) $(MPITESTFILES)
 
 test: test_compile
 	@{ result=0;			\
@@ -55,6 +56,29 @@ test: test_compile
 	  printf "Running $$x ...";	\
       timestamp1=$$(date +"%s"); \
 	  ./$$x >$$x.testlog 2>&1;	\
+      ret=$$? \
+      timestamp2=$$(date +"%s"); \
+      time_taken=$$[timestamp2-timestamp1]; \
+	  if [ $$ret -ne 0 ]; then \
+	    echo " $${time_taken}s... FAIL $$x"; \
+	    result=1;			\
+	    if [ -n "$TRAVIS" ] && [ -f core ] && command -v gdb >/dev/null 2>&1; then	\
+	      gdb $$x core -ex "thread apply all bt" -batch >>$$x.testlog 2>&1;		\
+	      rm -rf core;		\
+	    fi;				\
+	  else				\
+	    echo " $${time_taken}s... SUCCESS $$x";		\
+	    rm -f $$x.testlog;		\
+	  fi;				\
+	done;				\
+	exit $$result; }
+
+mpitest: test_compile
+	@{ result=0;			\
+	for x in $(MPITESTFILES); do	\
+	  printf "Running $$x ...";	\
+      timestamp1=$$(date +"%s"); \
+	  mpirun -np 3 ./$$x >$$x.testlog 2>&1;	\
       ret=$$? \
       timestamp2=$$(date +"%s"); \
       time_taken=$$[timestamp2-timestamp1]; \

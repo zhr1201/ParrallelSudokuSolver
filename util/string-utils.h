@@ -1,7 +1,7 @@
 #ifndef SUDOKU_UTIL_STRING_UTILS_H_
 #define SUDOKU_UTIL_STRING_UTILS_H_
 
-#include "util/global.h"
+#include "../util/global.h"
 #include <sstream>
 
 namespace sudoku {
