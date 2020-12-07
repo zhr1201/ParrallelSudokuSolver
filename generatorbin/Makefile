@@ -10,6 +10,6 @@ OBJFILES =
 
 TESTFILES = generator-test
 
-ADDLIBS = ../generator/sudoku-generator.a
+ADDLIBS = ../generator/sudoku-generator.a ../util/sudoku-util.a
 
 include ../makefiles/default_rules.mk

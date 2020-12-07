@@ -16,13 +16,22 @@ namespace sudoku {
 
 void FileParser::WriteToFile(std::string out_file, std::vector<Solvable*> *in_vec) {
     std::ofstream o_fs(out_file);
-    item_iter iter = in_vec->begin();
+    solvable_iter iter = in_vec->begin();
     int count = 0;
     for (; iter != in_vec->end(); ++iter) {
         WriteOne(*iter, o_fs);
         ++count;
     }
-    std::cout << "wrote " << count << std::endl;
+}
+
+void FileParser::WriteToFile(std::string out_file, std::vector<Validatable*> *in_vec) {
+    std::ofstream o_fs(out_file);
+    validatable_iter iter = in_vec->begin();
+    int count = 0;
+    for (; iter != in_vec->end(); ++iter) {
+        WriteOne(*iter, o_fs);
+        ++count;
+    }
 }
 
 void FileParser::ReadFromFile(std::string input_file, std::vector<Solvable*> *&ret) {
@@ -36,10 +45,20 @@ void FileParser::ReadFromFile(std::string input_file, std::vector<Solvable*> *&r
         ret->push_back(tmp);
         count++;
     }
-    std::cout << "read " << count << std::endl;
 }
 
 void FileParser::WriteOne(Solvable *data, std::ofstream &file) {
+    file << std::endl;
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            file << data->GetElement(j, i) << ',';
+        }
+        file << std::endl;
+    }
+}
+
+
+void FileParser::WriteOne(Validatable *data, std::ofstream &file) {
     file << std::endl;
     for (uint_t i = 0; i < SIZE; ++i) {
         for (uint_t j = 0; j < SIZE; ++j) {
