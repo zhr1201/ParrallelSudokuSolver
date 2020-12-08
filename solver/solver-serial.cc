@@ -19,7 +19,7 @@ bool SolverSerial::SolverInternal() {
     SUDOKU_ASSERT(sc_->GetStatus() != SolverCoreStatus::UNSET);
     // tmp vars for return
     Trial children[N_NUM];
-    size_t y_idx, x_idx;
+    uint_t y_idx, x_idx;
 
     while (sc_->GetStatus() != SolverCoreStatus::FAILED &&
            sc_->GetStatus() != SolverCoreStatus::SUCCESS) {
@@ -31,7 +31,7 @@ bool SolverSerial::SolverInternal() {
 
         } else {
             // LAST_TRY_SUCCESS or UNATTENPED
-            size_t num = sc_->GetChildren(children);
+            uint_t num = sc_->GetChildren(children);
             sc_->PushChildren(children, num);
             sc_->GetNextTryIdx(y_idx, x_idx);
             sc_->TakeSnapshot(y_idx, x_idx);

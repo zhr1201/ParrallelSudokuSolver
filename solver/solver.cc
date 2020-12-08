@@ -1,7 +1,35 @@
 #include "solver/solver.h"
+#include "util/string-utils.h"
 
 
 namespace sudoku {
+
+
+void AnswerIO::WriteToFile(std::string out_file, Validatable *sudoku) {
+    std::ofstream o_fs(out_file);
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            o_fs << sudoku->GetElement(j, i);
+            if (j != SIZE - 1)
+                o_fs << ',';
+        }
+        o_fs << std::endl;
+    }
+}
+
+void AnswerIO::ReadFromFile(std::string input_file, Validatable *&ret) {
+    SudokuAnswer *tmp = new SudokuAnswer;
+    std::ifstream i_fs(input_file);
+    std::string line;
+    for (uint_t i = 0; i < SIZE; ++i) {
+        std::getline(i_fs, line);
+        std::vector<std::string> sep_num = split(line, ",");
+        for (uint_t j = 0; j < SIZE; ++j) {
+            tmp->data_[i][j] = stoi(sep_num[j]);
+        }
+    }
+    ret = tmp;
+}
 
 
 Trial TrialStack::Top() {
@@ -24,8 +52,8 @@ void TrialStack::Push(Trial trial) {
 
 
 void SolverCore::ProblemStateMemPool::Reset() {
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
             snapshot_set_[i][j] = false;
         }
     }
@@ -46,23 +74,24 @@ void SolverCore::SetProblem(const Solvable &problem) {
     }
 }
 
-size_t SolverCore::GetChildren(Trial *trials) {
+
+uint_t SolverCore::GetChildren(Trial *trials) {
     SUDOKU_ASSERT(status_ == SolverCoreStatus::LAST_TRY_SUCCEED ||
                   status_ == SolverCoreStatus::UNATTEMPTED);
-    size_t x_idx, y_idx;
+    unsigned int x_idx, y_idx;
     Element val;
     bool ret = ps_.GetIdxFixedByPeers(y_idx, x_idx, val);
     if (ret) {
         trials[0] = {x_idx, y_idx, val};
         return 1;
     } else {
-        size_t n_poss = ps_.GetIdxWithMinPossibility(y_idx, x_idx);
+        uint_t n_poss = ps_.GetIdxWithMinPossibility(y_idx, x_idx);
         if (n_poss == 0)
             return 0;
         bool ret[N_NUM];
         n_poss = ps_.GetConstraints(y_idx, x_idx, ret);
-        size_t counter = 0;
-        for (size_t i = 1; i < N_NUM; ++i) {
+        uint_t counter = 0;
+        for (uint_t i = 1; i < N_NUM; ++i) {
             if (!ret[i]) {
                 trials[counter] = {x_idx, y_idx, i};
                 ++counter;
@@ -73,22 +102,22 @@ size_t SolverCore::GetChildren(Trial *trials) {
     }
 }
 
-void SolverCore::PushChildren(const Trial *trails, size_t len) {
-    for (size_t i = 0; i < len; ++i) {
+void SolverCore::PushChildren(const Trial *trails, uint_t len) {
+    for (uint_t i = 0; i < len; ++i) {
         stack_.Push(trails[i]);
     }
 }
 
-void SolverCore::TakeSnapshot(size_t y_idx, size_t x_idx) {
+void SolverCore::TakeSnapshot(uint_t y_idx, uint_t x_idx) {
     ProblemStateBase *snapshot = nullptr;
     ps_pool_.Apply(y_idx, x_idx, snapshot);
     *snapshot = ps_;
 }
 
-bool SolverCore::SetConstraint(size_t y_idx, size_t x_idx, Element val) {
+bool SolverCore::SetConstraint(uint_t y_idx, uint_t x_idx, Element val) {
     // Set all the constraints in the problem state snapshot
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
             if (ps_pool_.snapshot_set_[i][j]) {
                 ps_pool_.snapshot_arr_[i][j].SetConstraint(y_idx, x_idx, val);
             }
@@ -127,17 +156,50 @@ bool SolverCore::TryOneStep() {
     return true;
 }
 
-void SolverCore::GetNextTryIdx(size_t &y_idx, size_t &x_idx) {
+void SolverCore::GetNextTryIdx(uint_t &y_idx, uint_t &x_idx) {
     SUDOKU_ASSERT(!stack_.Emtpy());
     Trial tmp = stack_.Top();
     y_idx = tmp.y_idx_;
     x_idx = tmp.x_idx_;
 }
 
-void SolverCore::RecoverState(size_t y_idx, size_t x_idx) {
+void SolverCore::RecoverState(uint_t y_idx, uint_t x_idx) {
     SUDOKU_ASSERT(ps_pool_.snapshot_set_[y_idx][x_idx]);
     ps_ = ps_pool_.snapshot_arr_[y_idx][x_idx];
     status_ = SolverCoreStatus::LAST_TRY_SUCCEED;
+}
+
+void SolverCore::GetElementAtSnapshot(uint_t y_idx, uint_t x_idx, Element *ret) {
+    SUDOKU_ASSERT(ps_pool_.snapshot_set_[y_idx][x_idx]);
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            ret[IDX2OFFSET(i, j)] = ps_pool_.snapshot_arr_[y_idx][x_idx].Get(i, j);
+        }
+    }
+}
+
+void SolverCore::GetElement(Element *ret) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            ret[IDX2OFFSET(i, j)] = ps_.Get(i, j);
+        }
+    }
+}
+
+uint_t SolverCore::GetTrialsInStack(Trial *ret) {
+    for (uint_t i = 0; i < stack_.sp_ + 1; ++i) {
+        ret[i] = stack_.trial_stack_[i];
+    }
+    return stack_.sp_ + 1;
+}
+
+void SolverCore::SetAnswer(Element* answer) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
+            ps_.SetAnswer(i, j, answer[IDX2OFFSET(i, j)]);
+        }
+    }
+    status_ = SolverCoreStatus::SUCCESS;
 }
 
 
@@ -151,8 +213,8 @@ bool SolverBase::Solve(const Solvable &problem, SudokuAnswer &answer) {
     if (!SolverInternal())
         return false;
     // save answer
-    for (size_t i = 0; i < SIZE; ++i) {
-        for (size_t j = 0; j < SIZE; ++j) {
+    for (uint_t i = 0; i < SIZE; ++i) {
+        for (uint_t j = 0; j < SIZE; ++j) {
             answer.data_[i][j] = sc_->ps_.Get(i, j);
         }
     }

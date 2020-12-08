@@ -22,27 +22,53 @@ enum SolverCoreStatus {
     LAST_TRY_SUCCEED = 2,
     LAST_TRY_FAILED = 3,
     FAILED = 4,
-    SUCCESS = 5
+    SUCCESS = 5,
+    // one solution find by other workers
+    KILLED = 6
 };
 
+
+class AnswerIO;
 
 class SudokuAnswer : public Validatable {
 public:
     SudokuAnswer() : data_() {};
-    virtual Element GetElement(size_t x_idx, size_t y_idx) const { return data_[y_idx][x_idx]; }
+    virtual Element GetElement(uint_t x_idx, uint_t y_idx) const { return data_[y_idx][x_idx]; }
 private:
     Element data_[SIZE][SIZE];
     friend class SolverBase;  // only solver is allowed to modify the answer
+    friend class AnswerIO;
     // shouldn't copy answer from others :)
     DISALLOW_CLASS_COPY_AND_ASSIGN(SudokuAnswer);
 };
 
+class AnswerIO {
+public:
+    static void WriteToFile(std::string out_file, Validatable *sudoku);
+    static void ReadFromFile(std::string input_file, Validatable *&ret);
+};
+
 
 // record all trials and so that we can use stack to do backtracking
+# define TRIAL_SIZE 12
+
 struct Trial {
-    size_t x_idx_;
-    size_t y_idx_;
+    unsigned int x_idx_;
+    unsigned int y_idx_;
     Element val_;
+    
+    void Serialize(char *buf) {
+        memcpy(buf, &x_idx_, 4);
+        memcpy(buf + 4, &y_idx_, 4);
+        memcpy(buf + 8, &val_, 4);
+        
+    }
+
+    void Deserialize(const char *buf) {
+        memcpy(&x_idx_, buf, 4);
+        memcpy(&y_idx_, buf + 4, 4);
+        memcpy(&val_, buf + 8, 4);
+    }
 };
 
 
@@ -54,10 +80,12 @@ public:
     void Push(Trial trial);
     bool Emtpy() { return sp_ == -1; };
     void Reset() { sp_ = -1; };
+    uint_t Size() { return sp_ + 1; }
     // caller responsible for proving enough space
 private:
     Trial trial_stack_[N_GRID * N_NUM];
     int sp_;  // stack pointer
+    friend class SolverCore;
 };
 
 
@@ -76,7 +104,7 @@ class SolverCore {
         ProblemStateMemPool() : snapshot_arr_(), snapshot_set_() {};
         // only need apply method since in a DFS style search, the state of the searched path doesn't need to be stored
         // so we don't need to return the unused ones, we just need to overwrite the contents
-        void Apply(size_t y_idx, size_t x_idx, ProblemStateBase *&ret) { 
+        void Apply(uint_t y_idx, uint_t x_idx, ProblemStateBase *&ret) { 
             ret = &snapshot_arr_[y_idx][x_idx];
             snapshot_set_[y_idx][x_idx] = true;
         }
@@ -87,24 +115,39 @@ public:
     SolverCore() : ps_pool_(), stack_(), status_(SolverCoreStatus::UNSET) {};
     void SetProblem(const Solvable &problem);
 
-    // Get the element with the min possiblities
-    size_t GetChildren(Trial *trials);
-    // Push into the DFS stack
-    void PushChildren(const Trial *trails, size_t len);
+    // get the element with the min possiblities
+    uint_t GetChildren(Trial *trials);
+    // push into the DFS stack
+    // used for 1. DFS search 2. force the solver to search in a particular direction (set problem in another process)
+    void PushChildren(const Trial *trails, uint_t len);
     // Use the top of the stack to do one trial
-    void GetNextTryIdx(size_t &y_idx, size_t &x_idx);
+    void GetNextTryIdx(uint_t &y_idx, uint_t &x_idx);
     bool TryOneStep();
     SolverCoreStatus GetStatus() { return status_; };
 
     // use snapshots of problem state for backtrace
     // (logical undo operation is very expensive and hard to implement so ProblemState won't support that)
     // take a snapshot of ProblemState before filling the entry at y_idx and x_idx
-    void TakeSnapshot(size_t y_idx, size_t x_idx);
+    void TakeSnapshot(uint_t y_idx, uint_t x_idx);
     // recover to the state before trying to fill the element at y_idx, x_idx
-    void RecoverState(size_t y_idx, size_t x_idx);
+    void RecoverState(uint_t y_idx, uint_t x_idx);
+
+    // useful for splitting work, returns a 2 D sudoku mat
+    void GetElementAtSnapshot(uint_t y_idx, uint_t x_idx, Element *ret);
+    void GetElement(Element *ret);
+    // get the current number of feasible branches of the DFS tree, sizeof the stack
+    // useful for splitting the work into a fixed number of subproblems
+    uint_t GetNumBranches() { return stack_.Size(); };
+    uint_t GetTrialsInStack(Trial *ret);
 
     // could be used by parallel solver, setting a constriant discovered by another process
-    bool SetConstraint(size_t y_idx, size_t x_idx, Element val);
+    bool SetConstraint(uint_t y_idx, uint_t x_idx, Element val);
+
+    // only used when you know it's the correct answer for sure
+    // (another process solved the problem and tell you the answer)
+    void SetAnswer(Element* answer);
+    void Stop() { status_ = SolverCoreStatus::KILLED; };
+    bool TrialStackEmpty() { return stack_.Emtpy(); };
 
 private:
 
