@@ -33,6 +33,7 @@ Generator::Generator(Element *seed) {
 //Generate Sudoku Array and write to a .csv file
 void Generator::CreateSudoku(int difficulty, Sudoku &ret) {
 
+    srand(time(NULL));
     //create random Sudoku array by rotate and flip the given array
     CreateRandomSudoku();
     memcpy(ret.data_, seed_, sizeof(Element) * SIZE * SIZE);

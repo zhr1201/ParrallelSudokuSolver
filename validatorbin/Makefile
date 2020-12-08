@@ -10,6 +10,6 @@ OBJFILES =
 
 TESTFILES =
 
-ADDLIBS = 
+ADDLIBS = ../solver/sudoku-solver.a ../generator/sudoku-generator.a ../validator/sudoku-validator.a ../util/sudoku-util.a 
 
 include ../makefiles/default_rules.mk

@@ -28,6 +28,8 @@ enum SolverCoreStatus {
 };
 
 
+class AnswerIO;
+
 class SudokuAnswer : public Validatable {
 public:
     SudokuAnswer() : data_() {};
@@ -35,8 +37,15 @@ public:
 private:
     Element data_[SIZE][SIZE];
     friend class SolverBase;  // only solver is allowed to modify the answer
+    friend class AnswerIO;
     // shouldn't copy answer from others :)
     DISALLOW_CLASS_COPY_AND_ASSIGN(SudokuAnswer);
+};
+
+class AnswerIO {
+public:
+    static void WriteToFile(std::string out_file, Validatable *sudoku);
+    static void ReadFromFile(std::string input_file, Validatable *&ret);
 };
 
 
