@@ -22,9 +22,8 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        int n = atoi(argv[1]);
-        int difficulty = atoi(argv[2]);
-        std::string outfile(argv[3]);
+        int difficulty = atoi(argv[1]);
+        std::string outfile(argv[2]);
 
         Generator gen;
         

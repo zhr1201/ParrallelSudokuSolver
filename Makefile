@@ -4,7 +4,7 @@
 
 SHELL := /bin/bash
 
-SUBDIRS = util eval evalbin generator generatorbin \
+SUBDIRS = util generator generatorbin \
           solver solverbin validator validatorbin
 
 SUBDIRS_LIB = $(filter-out %bin, $(SUBDIRS))
@@ -69,10 +69,10 @@ $(SUBDIRS) :
 # this is necessary for correct parallel compilation
 #1)The tools depend on all the libraries
 evalbin generatorbin probleminfobin solverbin: \
- eval generator probleminfo solver util
+ generator solver util validator
 
 #2)The libraries have inter-dependencies (only use util for now, other dependencies to be added)
-eval: util 
 generator: util
 probleminfo: util
+validator: util
 solver: util validator
