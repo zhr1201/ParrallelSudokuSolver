@@ -21,6 +21,17 @@ make testmpi
 
 Run tests separately: e.g. solver-mpi-test, 1) enter solver 2) mpirun -np 9 ./solver-mpi-test
 
+### Executables
+generatorbin/generate-sudoku
+
+solverbin/solve-sudoku
+
+validatorbin/validate
+
+### test bash scripts
+
+eval-script.sh
+
 ## Architecture
 
 ## Parrallization
