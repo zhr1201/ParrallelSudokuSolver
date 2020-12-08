@@ -18,7 +18,9 @@ void FileParser::WriteToFile(std::string out_file, Solvable *sudoku) {
     std::ofstream o_fs(out_file);
     for (uint_t i = 0; i < SIZE; ++i) {
         for (uint_t j = 0; j < SIZE; ++j) {
-            o_fs << sudoku->GetElement(j, i) << ',';
+            o_fs << sudoku->GetElement(j, i);
+            if (j != SIZE - 1)
+                o_fs << ',';
         }
         o_fs << std::endl;
     }
@@ -28,7 +30,9 @@ void FileParser::WriteToFile(std::string out_file, Validatable *sudoku) {
     std::ofstream o_fs(out_file);
     for (uint_t i = 0; i < SIZE; ++i) {
         for (uint_t j = 0; j < SIZE; ++j) {
-            o_fs << sudoku->GetElement(j, i) << ',';
+            o_fs << sudoku->GetElement(j, i);
+            if (j != SIZE - 1)
+                o_fs << ',';
         }
         o_fs << std::endl;
     }
