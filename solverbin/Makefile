@@ -12,6 +12,6 @@ TESTFILES =
 
 MPITESTFILES =
 
-ADDLIBS = 
+ADDLIBS = ../solver/sudoku-solver.a ../util/sudoku-util.a ../generator/sudoku-generator.a 
 
 include ../makefiles/default_rules.mk
