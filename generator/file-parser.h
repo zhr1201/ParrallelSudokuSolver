@@ -18,7 +18,6 @@ class FileParser {
 
 public:
     static void WriteToFile(std::string out_file, Solvable *sudoku);
-    static void WriteToFile(std::string out_file, Validatable* sudoku);
 
     // caller responsible for free returned value
     static void ReadFromFile(std::string input_file, Solvable *&ret);

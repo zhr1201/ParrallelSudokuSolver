@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "solver/solver-serial.h"
+#include "util/timer.h"
 #include "generator/file-parser.h"
 
 
@@ -33,10 +34,12 @@ int main(int argc, char *argv[]) {
 
         SolverSerial *solver = SolverSerial::GetInstance();
 
-        
+        Timer tm;
         solver->Solve(*read_sudoku, answer);
+        std::cout << "Took " << tm.Elapsed() << " to solve! \n" << std::endl; 
 
-        fp.WriteToFile(outfile, &answer);
+        AnswerIO ans_writer;
+        ans_writer.WriteToFile(outfile, &answer);
         delete read_sudoku;
 
     } catch (const std::exception &e) {
