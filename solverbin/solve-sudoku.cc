@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
         AnswerIO ans_writer;
         ans_writer.WriteToFile(outfile, &answer);
         delete read_sudoku;
+        return 0;
 
     } catch (const std::exception &e) {
         std::cerr << e.what();
