@@ -1,0 +1,767 @@
+./compare-solver-speed.sh 20 100 5
+=====================================
+Solve using serial solver
+Took 0.00173211 to solve! 
+
+Solve using mpi solver
+stoistoistoistoistoi--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[54541,1],4]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+stoiSolve using mpi solver
+Took 0.00377531 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00208592 to solve! 
+
+Solve using mpi solver
+Took 0.00314671 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0149591 to solve! 
+
+Solve using mpi solver
+Took 0.00314528 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00220394 to solve! 
+
+Solve using mpi solver
+Took 0.00354344 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182295 to solve! 
+
+Solve using mpi solver
+Took 0.00358754 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178194 to solve! 
+
+Solve using mpi solver
+Took 0.00375593 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00219297 to solve! 
+
+Solve using mpi solver
+Took 0.00312724 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00166583 to solve! 
+
+Solve using mpi solver
+Took 0.00312986 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00174212 to solve! 
+
+Solve using mpi solver
+Took 0.0032967 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00233793 to solve! 
+
+Solve using mpi solver
+stoistoi--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+[1607493523.671225] [compute-b24-48:303954:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/303955/fd/20 flags=0x0) failed: Permission denied
+[1607493523.671043] [compute-b24-48:303957:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/303953/fd/20 flags=0x0) failed: No such file or directory
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[55122,1],0]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.0016582 to solve! 
+
+Solve using mpi solver
+Took 0.00348606 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00165296 to solve! 
+
+Solve using mpi solver
+Took 0.00358531 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00165296 to solve! 
+
+Solve using mpi solver
+Took 0.00315572 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00211501 to solve! 
+
+Solve using mpi solver
+stoistoistoi[1607493524.757031] [compute-b24-48:304178:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/304179/fd/20 flags=0x0) failed: Permission denied
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[53297,1],2]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00183487 to solve! 
+
+Solve using mpi solver
+Took 0.00315738 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001791 to solve! 
+
+Solve using mpi solver
+Took 0.0033804 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00174379 to solve! 
+
+Solve using mpi solver
+Took 0.00357101 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00187206 to solve! 
+
+Solve using mpi solver
+Took 0.00330089 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178599 to solve! 
+
+Solve using mpi solver
+Took 0.00381855 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177002 to solve! 
+
+Solve using mpi solver
+Took 0.00371921 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00175214 to solve! 
+
+Solve using mpi solver
+Took 0.0035722 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00171518 to solve! 
+
+Solve using mpi solver
+Took 0.00314634 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00223207 to solve! 
+
+Solve using mpi solver
+Took 0.0031474 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00174713 to solve! 
+
+Solve using mpi solver
+Took 0.00358367 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00170898 to solve! 
+
+Solve using mpi solver
+Took 0.00381816 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00169897 to solve! 
+
+Solve using mpi solver
+Took 0.00314695 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00189185 to solve! 
+
+Solve using mpi solver
+Took 0.00330654 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00169802 to solve! 
+
+Solve using mpi solver
+Took 0.00348022 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00181508 to solve! 
+
+Solve using mpi solver
+Took 0.00313632 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178504 to solve! 
+
+Solve using mpi solver
+Took 0.00354765 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0022378 to solve! 
+
+Solve using mpi solver
+stoistoistoi[1607493529.880803] [compute-b24-48:305133:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/305134/fd/20 flags=0x0) failed: Permission denied
+[1607493529.880930] [compute-b24-48:305135:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/305136/fd/20 flags=0x0) failed: Permission denied
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[54263,1],2]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00192809 to solve! 
+
+Solve using mpi solver
+Took 0.00358353 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00227499 to solve! 
+
+Solve using mpi solver
+Took 0.00358147 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188494 to solve! 
+
+Solve using mpi solver
+Took 0.00315008 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0018909 to solve! 
+
+Solve using mpi solver
+Took 0.00358029 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001863 to solve! 
+
+Solve using mpi solver
+Took 0.00350141 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184512 to solve! 
+
+Solve using mpi solver
+Took 0.00314425 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184011 to solve! 
+
+Solve using mpi solver
+Took 0.00358184 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00202489 to solve! 
+
+Solve using mpi solver
+Took 0.0031503 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184989 to solve! 
+
+Solve using mpi solver
+Took 0.00314768 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00225091 to solve! 
+
+Solve using mpi solver
+Took 0.00331602 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00187206 to solve! 
+
+Solve using mpi solver
+stoistoistoistoistoi--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[56905,1],0]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.0019629 to solve! 
+
+Solve using mpi solver
+Took 0.00315499 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00169516 to solve! 
+
+Solve using mpi solver
+Took 0.00373513 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00186801 to solve! 
+
+Solve using mpi solver
+Took 0.00358785 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188303 to solve! 
+
+Solve using mpi solver
+Took 0.00313618 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001899 to solve! 
+
+Solve using mpi solver
+Took 0.00346766 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188684 to solve! 
+
+Solve using mpi solver
+Took 0.00312128 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00204611 to solve! 
+
+Solve using mpi solver
+Took 0.00359531 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00195003 to solve! 
+
+Solve using mpi solver
+Took 0.00356406 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00199914 to solve! 
+
+Solve using mpi solver
+Took 0.00358826 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00230718 to solve! 
+
+Solve using mpi solver
+Took 0.00332642 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002213 to solve! 
+
+Solve using mpi solver
+Took 0.00385829 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00205493 to solve! 
+
+Solve using mpi solver
+Took 0.00355706 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00205922 to solve! 
+
+Solve using mpi solver
+stoistoistoistoistoi--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[55600,1],0]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00205922 to solve! 
+
+Solve using mpi solver
+Took 0.00383459 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0019269 to solve! 
+
+Solve using mpi solver
+Took 0.00313828 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178099 to solve! 
+
+Solve using mpi solver
+Took 0.00338445 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00181913 to solve! 
+
+Solve using mpi solver
+Took 0.00375691 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00171685 to solve! 
+
+Solve using mpi solver
+Took 0.00356408 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0018189 to solve! 
+
+Solve using mpi solver
+Took 0.00313911 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00212383 to solve! 
+
+Solve using mpi solver
+Took 0.00319324 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00187993 to solve! 
+
+Solve using mpi solver
+Took 0.00357523 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.013047 to solve! 
+
+Solve using mpi solver
+Took 0.00349763 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0017972 to solve! 
+
+Solve using mpi solver
+stoistoistoistoistoi--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[56186,1],4]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00189209 to solve! 
+
+Solve using mpi solver
+Took 0.00350849 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00193501 to solve! 
+
+Solve using mpi solver
+Took 0.00316946 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188088 to solve! 
+
+Solve using mpi solver
+Took 0.00312681 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00213003 to solve! 
+
+Solve using mpi solver
+Took 0.00315055 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00179005 to solve! 
+
+Solve using mpi solver
+Took 0.00313594 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00183487 to solve! 
+
+Solve using mpi solver
+Took 0.00355605 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00181603 to solve! 
+
+Solve using mpi solver
+Took 0.00313842 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00197101 to solve! 
+
+Solve using mpi solver
+Took 0.00342538 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00183415 to solve! 
+
+Solve using mpi solver
+Took 0.00314355 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00185704 to solve! 
+
+Solve using mpi solver
+Took 0.00357995 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00179195 to solve! 
+
+Solve using mpi solver
+Took 0.00313313 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00242496 to solve! 
+
+Solve using mpi solver
+Took 0.00337868 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00185084 to solve! 
+
+Solve using mpi solver
+Took 0.0034927 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00205588 to solve! 
+
+Solve using mpi solver
+Took 0.00316276 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00176096 to solve! 
+
+Solve using mpi solver
+Took 0.00316748 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00176382 to solve! 
+
+Solve using mpi solver
+Took 0.00316455 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188994 to solve! 
+
+Solve using mpi solver
+Took 0.00340697 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00180292 to solve! 
+
+Solve using mpi solver
+Took 0.00329818 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177097 to solve! 
+
+Solve using mpi solver
+Took 0.0032947 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00189281 to solve! 
+
+Solve using mpi solver
+Took 0.0033921 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00210404 to solve! 
+
+Solve using mpi solver
+Took 0.0032773 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00207901 to solve! 
+
+Solve using mpi solver
+Took 0.00332014 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177884 to solve! 
+
+Solve using mpi solver
+Took 0.00315532 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00165892 to solve! 
+
+Solve using mpi solver
+Took 0.00352238 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184989 to solve! 
+
+Solve using mpi solver
+Took 0.00349411 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00197196 to solve! 
+
+Solve using mpi solver
+Took 0.00314964 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00179696 to solve! 
+
+Solve using mpi solver
+Took 0.00317164 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00180507 to solve! 
+
+Solve using mpi solver
+Took 0.00313339 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00223899 to solve! 
+
+Solve using mpi solver
+Took 0.0035592 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184584 to solve! 
+
+Solve using mpi solver
+Took 0.0031431 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00185704 to solve! 
+
+Solve using mpi solver
+Took 0.00315132 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00193906 to solve! 
+
+Solve using mpi solver
+Took 0.00314549 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00200915 to solve! 
+
+Solve using mpi solver
+Took 0.00327823 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182199 to solve! 
+
+Solve using mpi solver
+Took 0.00313333 to solve! 
+

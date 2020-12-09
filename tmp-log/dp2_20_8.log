@@ -1,0 +1,736 @@
+./compare-solver-speed.sh 20 100 9
+=====================================
+Solve using serial solver
+Took 0.00162387 to solve! 
+
+Solve using mpi solver
+stoistoistoistoistoistoi[1607493520.797762] [compute-b24-53:404145:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/404146/fd/20 flags=0x0) failed: Permission denied
+[1607493520.798282] [compute-b24-53:404143:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/404146/fd/20 flags=0x0) failed: Permission denied
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[36101,1],4]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00173688 to solve! 
+
+Solve using mpi solver
+Took 0.00419208 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001652 to solve! 
+
+Solve using mpi solver
+Took 0.00416132 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00168395 to solve! 
+
+Solve using mpi solver
+Took 0.00418054 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182199 to solve! 
+
+Solve using mpi solver
+Took 0.00418071 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00176597 to solve! 
+
+Solve using mpi solver
+Took 0.00380241 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00166202 to solve! 
+
+Solve using mpi solver
+Took 0.00418477 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00172997 to solve! 
+
+Solve using mpi solver
+Took 0.00419158 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00169086 to solve! 
+
+Solve using mpi solver
+Took 0.00455429 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182295 to solve! 
+
+Solve using mpi solver
+Took 0.00422641 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00214911 to solve! 
+
+Solve using mpi solver
+Took 0.00416484 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00204897 to solve! 
+
+Solve using mpi solver
+Took 0.00378334 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00175691 to solve! 
+
+Solve using mpi solver
+Took 0.00376019 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00215912 to solve! 
+
+Solve using mpi solver
+Took 0.00390853 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178599 to solve! 
+
+Solve using mpi solver
+Took 0.00375829 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00171804 to solve! 
+
+Solve using mpi solver
+stoistoistoi[1607493526.292238] [compute-b24-53:405594:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/405595/fd/20 flags=0x0) failed: Permission denied
+[1607493526.292298] [compute-b24-53:405593:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/405595/fd/20 flags=0x0) failed: Permission denied
+[1607493526.292925] [compute-b24-53:405588:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/405589/fd/20 flags=0x0) failed: Permission denied
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[38895,1],2]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00170517 to solve! 
+
+Solve using mpi solver
+Took 0.0042675 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00173116 to solve! 
+
+Solve using mpi solver
+Took 0.0038836 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001683 to solve! 
+
+Solve using mpi solver
+Took 0.00444321 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178409 to solve! 
+
+Solve using mpi solver
+Took 0.00375629 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001894 to solve! 
+
+Solve using mpi solver
+Took 0.00434145 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184512 to solve! 
+
+Solve using mpi solver
+Took 0.00428033 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00175309 to solve! 
+
+Solve using mpi solver
+Took 0.00375226 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00174189 to solve! 
+
+Solve using mpi solver
+Took 0.00407919 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00215697 to solve! 
+
+Solve using mpi solver
+Took 0.00374123 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00220585 to solve! 
+
+Solve using mpi solver
+Took 0.00416732 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0040679 to solve! 
+
+Solve using mpi solver
+Took 0.00420332 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00172496 to solve! 
+
+Solve using mpi solver
+Took 0.0039655 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00192213 to solve! 
+
+Solve using mpi solver
+Took 0.00421511 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00197005 to solve! 
+
+Solve using mpi solver
+Took 0.00390976 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184488 to solve! 
+
+Solve using mpi solver
+Took 0.00433829 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182414 to solve! 
+
+Solve using mpi solver
+Took 0.0037758 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00206304 to solve! 
+
+Solve using mpi solver
+Took 0.00428916 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0018959 to solve! 
+
+Solve using mpi solver
+Took 0.00411382 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00197196 to solve! 
+
+Solve using mpi solver
+Took 0.00392003 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00181413 to solve! 
+
+Solve using mpi solver
+Took 0.00372907 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177383 to solve! 
+
+Solve using mpi solver
+Took 0.00434381 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00215411 to solve! 
+
+Solve using mpi solver
+Took 0.00373757 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188708 to solve! 
+
+Solve using mpi solver
+Took 0.00410564 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00219107 to solve! 
+
+Solve using mpi solver
+Took 0.00376218 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00205088 to solve! 
+
+Solve using mpi solver
+Took 0.00418239 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182009 to solve! 
+
+Solve using mpi solver
+Took 0.00394825 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00180197 to solve! 
+
+Solve using mpi solver
+Took 0.00414778 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00198197 to solve! 
+
+Solve using mpi solver
+Took 0.0037437 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00189114 to solve! 
+
+Solve using mpi solver
+Took 0.00421982 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00179911 to solve! 
+
+Solve using mpi solver
+Took 0.00376298 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00170493 to solve! 
+
+Solve using mpi solver
+Took 0.00393186 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0023849 to solve! 
+
+Solve using mpi solver
+Took 0.00379418 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184989 to solve! 
+
+Solve using mpi solver
+Took 0.00395749 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00169492 to solve! 
+
+Solve using mpi solver
+Took 0.00436617 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182199 to solve! 
+
+Solve using mpi solver
+Took 0.00415987 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00186491 to solve! 
+
+Solve using mpi solver
+Took 0.00393686 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.001719 to solve! 
+
+Solve using mpi solver
+Took 0.00436103 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182295 to solve! 
+
+Solve using mpi solver
+Took 0.0039218 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178385 to solve! 
+
+Solve using mpi solver
+Took 0.00437557 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00175714 to solve! 
+
+Solve using mpi solver
+Took 0.00378471 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178599 to solve! 
+
+Solve using mpi solver
+Took 0.00452835 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00187302 to solve! 
+
+Solve using mpi solver
+stoistoi--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+[1607493542.812169] [compute-b24-53:409645:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/409637/fd/20 flags=0x0) failed: Permission denied
+[1607493542.812175] [compute-b24-53:409644:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/409637/fd/20 flags=0x0) failed: Permission denied
+[1607493542.812289] [compute-b24-53:409639:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/409640/fd/20 flags=0x0) failed: Permission denied
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[59265,1],0]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.0017221 to solve! 
+
+Solve using mpi solver
+Took 0.00373288 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00161219 to solve! 
+
+Solve using mpi solver
+Took 0.00380894 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00172305 to solve! 
+
+Solve using mpi solver
+Took 0.00377776 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00181484 to solve! 
+
+Solve using mpi solver
+Took 0.00452234 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00183821 to solve! 
+
+Solve using mpi solver
+Took 0.00375924 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00182605 to solve! 
+
+Solve using mpi solver
+Took 0.00432867 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00215316 to solve! 
+
+Solve using mpi solver
+Took 0.00377057 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00179791 to solve! 
+
+Solve using mpi solver
+Took 0.00411177 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177193 to solve! 
+
+Solve using mpi solver
+Took 0.00413288 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00195098 to solve! 
+
+Solve using mpi solver
+Took 0.00376782 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177407 to solve! 
+
+Solve using mpi solver
+Took 0.00376189 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00177717 to solve! 
+
+Solve using mpi solver
+Took 0.00376603 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00200295 to solve! 
+
+Solve using mpi solver
+Took 0.00375379 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00178504 to solve! 
+
+Solve using mpi solver
+Took 0.00412263 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00181603 to solve! 
+
+Solve using mpi solver
+Took 0.00373223 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00174809 to solve! 
+
+Solve using mpi solver
+Took 0.00393246 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00176311 to solve! 
+
+Solve using mpi solver
+Took 0.00378619 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00172091 to solve! 
+
+Solve using mpi solver
+Took 0.00376354 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00192213 to solve! 
+
+Solve using mpi solver
+Took 0.00433752 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00629401 to solve! 
+
+Solve using mpi solver
+Took 0.00374074 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00198007 to solve! 
+
+Solve using mpi solver
+Took 0.00414834 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00205994 to solve! 
+
+Solve using mpi solver
+Took 0.00372468 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00224304 to solve! 
+
+Solve using mpi solver
+Took 0.0037661 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0023129 to solve! 
+
+Solve using mpi solver
+Took 0.00393104 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00188017 to solve! 
+
+Solve using mpi solver
+Took 0.00394785 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00211883 to solve! 
+
+Solve using mpi solver
+Took 0.00383281 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00201488 to solve! 
+
+Solve using mpi solver
+Took 0.00374395 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00186706 to solve! 
+
+Solve using mpi solver
+Took 0.00378039 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00194907 to solve! 
+
+Solve using mpi solver
+Took 0.00388806 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00195789 to solve! 
+
+Solve using mpi solver
+Took 0.00393234 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0019691 to solve! 
+
+Solve using mpi solver
+Took 0.00412894 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00198197 to solve! 
+
+Solve using mpi solver
+Took 0.00433643 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00190997 to solve! 
+
+Solve using mpi solver
+Took 0.00380394 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00195599 to solve! 
+
+Solve using mpi solver
+Took 0.00378879 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0018878 to solve! 
+
+Solve using mpi solver
+Took 0.00384403 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00244498 to solve! 
+
+Solve using mpi solver
+Took 0.00379454 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00194097 to solve! 
+
+Solve using mpi solver
+Took 0.00382719 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00194001 to solve! 
+
+Solve using mpi solver
+Took 0.00396386 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00189996 to solve! 
+
+Solve using mpi solver
+Took 0.00420381 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00193191 to solve! 
+
+Solve using mpi solver
+Took 0.00393695 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00196099 to solve! 
+
+Solve using mpi solver
+Took 0.00376673 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00184894 to solve! 
+
+Solve using mpi solver
+Took 0.00380929 to solve! 
+

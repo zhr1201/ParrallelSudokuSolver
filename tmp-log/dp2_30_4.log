@@ -1,0 +1,711 @@
+./compare-solver-speed.sh 30 100 5
+=====================================
+Solve using serial solver
+Took 0.00225902 to solve! 
+
+Solve using mpi solver
+Took 0.00361695 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00207901 to solve! 
+
+Solve using mpi solver
+Took 0.00357948 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00219297 to solve! 
+
+Solve using mpi solver
+Took 0.00356434 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.003268 to solve! 
+
+Solve using mpi solver
+Took 0.0037334 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00211716 to solve! 
+
+Solve using mpi solver
+Took 0.00359963 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00222516 to solve! 
+
+Solve using mpi solver
+Took 0.00356219 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00210094 to solve! 
+
+Solve using mpi solver
+Took 0.00373364 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00228119 to solve! 
+
+Solve using mpi solver
+Took 0.00381866 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00223708 to solve! 
+
+Solve using mpi solver
+Took 0.00376424 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00229096 to solve! 
+
+Solve using mpi solver
+Took 0.00394285 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00236702 to solve! 
+
+Solve using mpi solver
+Took 0.0035465 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00234699 to solve! 
+
+Solve using mpi solver
+Took 0.00378797 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00241089 to solve! 
+
+Solve using mpi solver
+Took 0.00374041 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00235486 to solve! 
+
+Solve using mpi solver
+Took 0.00371693 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00251007 to solve! 
+
+Solve using mpi solver
+Took 0.00371692 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00217986 to solve! 
+
+Solve using mpi solver
+Took 0.00375215 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00238395 to solve! 
+
+Solve using mpi solver
+Took 0.00382633 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00256801 to solve! 
+
+Solve using mpi solver
+Took 0.00360133 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00244999 to solve! 
+
+Solve using mpi solver
+Took 0.00355286 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00228 to solve! 
+
+Solve using mpi solver
+Took 0.00391735 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0022459 to solve! 
+
+Solve using mpi solver
+Took 0.00357307 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00257587 to solve! 
+
+Solve using mpi solver
+Took 0.00393598 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00311995 to solve! 
+
+Solve using mpi solver
+Took 0.00358489 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00244999 to solve! 
+
+Solve using mpi solver
+Took 0.00355527 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00231695 to solve! 
+
+Solve using mpi solver
+Took 0.00389563 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00226903 to solve! 
+
+Solve using mpi solver
+Took 0.00357609 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00236297 to solve! 
+
+Solve using mpi solver
+Took 0.00357672 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00229311 to solve! 
+
+Solve using mpi solver
+Took 0.00373837 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00237703 to solve! 
+
+Solve using mpi solver
+Took 0.00359647 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00257611 to solve! 
+
+Solve using mpi solver
+Took 0.00381363 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00227404 to solve! 
+
+Solve using mpi solver
+Took 0.00356925 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00217199 to solve! 
+
+Solve using mpi solver
+Took 0.00373617 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00250602 to solve! 
+
+Solve using mpi solver
+Took 0.00358268 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002316 to solve! 
+
+Solve using mpi solver
+Took 0.00357141 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00243616 to solve! 
+
+Solve using mpi solver
+Took 0.00358484 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00233412 to solve! 
+
+Solve using mpi solver
+Took 0.00378452 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00227189 to solve! 
+
+Solve using mpi solver
+Took 0.00355365 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00242805 to solve! 
+
+Solve using mpi solver
+Took 0.00371954 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00217795 to solve! 
+
+Solve using mpi solver
+Took 0.00357966 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00233102 to solve! 
+
+Solve using mpi solver
+Took 0.003596 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002563 to solve! 
+
+Solve using mpi solver
+Took 0.00360042 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00256395 to solve! 
+
+Solve using mpi solver
+Took 0.00356177 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00283909 to solve! 
+
+Solve using mpi solver
+Took 0.00371584 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00263715 to solve! 
+
+Solve using mpi solver
+Took 0.00355968 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00239491 to solve! 
+
+Solve using mpi solver
+Took 0.00356906 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002352 to solve! 
+
+Solve using mpi solver
+Took 0.00392203 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00249195 to solve! 
+
+Solve using mpi solver
+Took 0.0038258 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00216413 to solve! 
+
+Solve using mpi solver
+Took 0.00358193 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002316 to solve! 
+
+Solve using mpi solver
+Took 0.00355361 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00230408 to solve! 
+
+Solve using mpi solver
+Took 0.00354621 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00228 to solve! 
+
+Solve using mpi solver
+Took 0.00358717 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00226402 to solve! 
+
+Solve using mpi solver
+Took 0.00373277 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00239801 to solve! 
+
+Solve using mpi solver
+Took 0.00358452 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00239897 to solve! 
+
+Solve using mpi solver
+Took 0.00354228 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00239992 to solve! 
+
+Solve using mpi solver
+Took 0.00356863 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00287414 to solve! 
+
+Solve using mpi solver
+Took 0.00374396 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00225091 to solve! 
+
+Solve using mpi solver
+Took 0.00381225 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00232506 to solve! 
+
+Solve using mpi solver
+Took 0.00359704 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00224304 to solve! 
+
+Solve using mpi solver
+Took 0.00357563 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00220299 to solve! 
+
+Solve using mpi solver
+Took 0.00374653 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00218701 to solve! 
+
+Solve using mpi solver
+Took 0.00390755 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00222898 to solve! 
+
+Solve using mpi solver
+Took 0.00357557 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00231504 to solve! 
+
+Solve using mpi solver
+Took 0.00371199 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00230312 to solve! 
+
+Solve using mpi solver
+Took 0.00357337 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00225496 to solve! 
+
+Solve using mpi solver
+Took 0.00356211 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00215197 to solve! 
+
+Solve using mpi solver
+Took 0.00356483 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00226402 to solve! 
+
+Solve using mpi solver
+Took 0.00383835 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00228596 to solve! 
+
+Solve using mpi solver
+stoistoistoi[1607493907.295527] [compute-b24-11:2095298:0]       mm_posix.c:195  UCX  ERROR open(file_name=/proc/2095294/fd/20 flags=0x0) failed: Permission denied
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[10280,1],2]
+  Exit code:    255
+--------------------------------------------------------------------------
+=====================================
+Solve using serial solver
+Took 0.00220609 to solve! 
+
+Solve using mpi solver
+Took 0.00355378 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00221205 to solve! 
+
+Solve using mpi solver
+Took 0.00357696 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00251698 to solve! 
+
+Solve using mpi solver
+Took 0.0035752 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00215483 to solve! 
+
+Solve using mpi solver
+Took 0.00383601 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0021801 to solve! 
+
+Solve using mpi solver
+Took 0.00374781 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00259995 to solve! 
+
+Solve using mpi solver
+Took 0.00377097 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00222492 to solve! 
+
+Solve using mpi solver
+Took 0.00361521 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00221515 to solve! 
+
+Solve using mpi solver
+Took 0.00359714 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00241804 to solve! 
+
+Solve using mpi solver
+Took 0.00356722 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00225592 to solve! 
+
+Solve using mpi solver
+Took 0.00372612 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0133469 to solve! 
+
+Solve using mpi solver
+Took 0.00382243 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00224495 to solve! 
+
+Solve using mpi solver
+Took 0.00359234 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00245404 to solve! 
+
+Solve using mpi solver
+Took 0.00358562 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002244 to solve! 
+
+Solve using mpi solver
+Took 0.00358663 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00231695 to solve! 
+
+Solve using mpi solver
+Took 0.00373484 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.0024519 to solve! 
+
+Solve using mpi solver
+Took 0.00356059 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00230408 to solve! 
+
+Solve using mpi solver
+Took 0.00357704 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00221181 to solve! 
+
+Solve using mpi solver
+Took 0.003594 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00224304 to solve! 
+
+Solve using mpi solver
+Took 0.00382408 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00256181 to solve! 
+
+Solve using mpi solver
+Took 0.00361144 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00237513 to solve! 
+
+Solve using mpi solver
+Took 0.00391698 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00225806 to solve! 
+
+Solve using mpi solver
+Took 0.00358049 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00218892 to solve! 
+
+Solve using mpi solver
+Took 0.00394005 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00233507 to solve! 
+
+Solve using mpi solver
+Took 0.00393777 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.002249 to solve! 
+
+Solve using mpi solver
+Took 0.00361748 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00205398 to solve! 
+
+Solve using mpi solver
+Took 0.003599 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00225711 to solve! 
+
+Solve using mpi solver
+Took 0.00375271 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00222898 to solve! 
+
+Solve using mpi solver
+Took 0.00375501 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00221491 to solve! 
+
+Solve using mpi solver
+Took 0.0039511 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00214696 to solve! 
+
+Solve using mpi solver
+Took 0.00392247 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00213289 to solve! 
+
+Solve using mpi solver
+Took 0.00393134 to solve! 
+
+=====================================
+Solve using serial solver
+Took 0.00212693 to solve! 
+
+Solve using mpi solver
+Took 0.00358044 to solve! 
+
