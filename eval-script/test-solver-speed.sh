@@ -29,7 +29,7 @@ if [ $solver_type -eq 1 ] ; then
     solve_cmd="solve-sudoku ${tmp_in_file} ${tmp_out_file}";
 elif [ $solver_type -eq 2 ] ; then
     echo "Solving using mpi"
-    solve_cmd="mpirun -np ${num_procs} solve-sudoku-mpi ${tmp_in_file} ${tmp_out_file}";
+    solve_cmd="mpirun -np ${num_procs} --mca mpi_cuda_support 0  solve-sudoku-mpi ${tmp_in_file} ${tmp_out_file}";
 else 
     echo "Solver type not supported"
     exit 1;

@@ -23,7 +23,7 @@ tmp_out_file="test_out.csv"
 
 solve_serial_cmd="solve-sudoku ${tmp_in_file} ${tmp_out_file}";
 
-solve_mpi_cmd="mpirun -np ${num_of_procs} solve-sudoku-mpi ${tmp_in_file} ${tmp_out_file}";
+solve_mpi_cmd="mpirun -np ${num_of_procs} --mca mpi_cuda_support 0 solve-sudoku-mpi ${tmp_in_file} ${tmp_out_file}";
 
 for i in $(seq $num_problems)
 do
