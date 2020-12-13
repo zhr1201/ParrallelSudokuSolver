@@ -74,6 +74,37 @@ uint_t SolverCore::GetChildren(Trial *trials) {
     }
 }
 
+//get all children for next parallel prunning
+uint_t * SolverCore::GetMultipleChildren(Trial *trials) {
+    SUDOKU_ASSERT(status_ == SolverCoreStatus::LAST_TRY_SUCCEED ||
+                  status_ == SolverCoreStatus::UNATTEMPTED);
+    unsigned int x_idx, y_idx;
+    Element val;
+    bool ret = ps_.GetIdxFixedByPeers(y_idx, x_idx, val);
+    if (ret) {
+        trials[0] = {x_idx, y_idx, val};
+        return 1;
+    } else {
+        uint_t n_poss = ps_.GetIdxWithMinPossibility(y_idx, x_idx);
+        if (n_poss == 0)
+            return 0;
+        bool ret[N_NUM];
+        n_poss = ps_.GetConstraints(y_idx, x_idx, ret);
+        uint_t counter = 0;
+        uint_t multipleChildren[N_NUM];
+        for (uint_t i = 1; i < N_NUM; ++i) {
+            if (!ret[i]) {
+                trials[counter] = {x_idx, y_idx, i};
+                multipleChildren.push(counter+1); 
+                ++counter;
+            }
+        }
+
+        return multipleChildren;
+    }
+}
+
+
 void SolverCore::PushChildren(const Trial *trails, uint_t len) {
     for (uint_t i = 0; i < len; ++i) {
         stack_.Push(trails[i]);
@@ -117,7 +148,7 @@ bool SolverCore::TryOneStep() {
     }
 
     if (!ps_.CheckValid()) {
-        if (stack_.Emtpy()) 
+        if (stack_.Emtpy())
             status_ = SolverCoreStatus::FAILED;
         else
             status_ = SolverCoreStatus::LAST_TRY_FAILED;

@@ -40,15 +40,16 @@ endif
 	$(MAKE) -C ${@D} ${@F}
 
 clean:
-	-rm -f *.o *.a *.so $(TESTFILES) $(MPITESTFILES) $(BINFILES) $(TESTOUTPUTS) tmp* *.tmp *.testlog
+	-rm -f *.o *.a *.so $(TESTFILES) $(MPITESTFILES) $(OMPTESTFILES) $(BINFILES) $(TESTOUTPUTS) tmp* *.tmp *.testlog
 
 distclean: clean
 	-rm -f .depend.mk
 
 $(TESTFILES): $(LIBFILE) $(XDEPENDS)
 $(MPITESTFILES): $(LIBFILE) $(XDEPENDS)
+$(OMPTESTFILES): $(LIBFILE) $(XDEPENDS)
 
-test_compile: $(TESTFILES) $(MPITESTFILES)
+test_compile: $(TESTFILES) $(MPITESTFILES) $(OMPTESTFILES)
 
 test: test_compile
 	@{ result=0;			\
@@ -96,6 +97,29 @@ mpitest: test_compile
 	done;				\
 	exit $$result; }
 
+omptest: test_compile
+	@{ result=0;			\
+	for x in $(OMPTESTFILES); do	\
+	  printf "Running $$x ...";	\
+      timestamp1=$$(date +"%s"); \
+	  ./$$x >$$x.testlog 2>&1;	\
+      ret=$$? \
+      timestamp2=$$(date +"%s"); \
+      time_taken=$$[timestamp2-timestamp1]; \
+	  if [ $$ret -ne 0 ]; then \
+	    echo " $${time_taken}s... FAIL $$x"; \
+	    result=1;			\
+	    if [ -n "$TRAVIS" ] && [ -f core ] && command -v gdb >/dev/null 2>&1; then	\
+	      gdb $$x core -ex "thread apply all bt" -batch >>$$x.testlog 2>&1;		\
+	      rm -rf core;		\
+	    fi;				\
+	  else				\
+	    echo " $${time_taken}s... SUCCESS $$x";		\
+	    rm -f $$x.testlog;		\
+	  fi;				\
+	done;				\
+	exit $$result; }
+	
 #buid up dependency commands
 CC_SRCS=$(wildcard *.cc)
 #check if files exist to run dependency commands on

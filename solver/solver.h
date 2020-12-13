@@ -47,12 +47,12 @@ struct Trial {
     unsigned int x_idx_;
     unsigned int y_idx_;
     Element val_;
-    
+
     void Serialize(char *buf) {
         memcpy(buf, &x_idx_, 4);
         memcpy(buf + 4, &y_idx_, 4);
         memcpy(buf + 8, &val_, 4);
-        
+
     }
 
     void Deserialize(const char *buf) {
@@ -95,7 +95,7 @@ class SolverCore {
         ProblemStateMemPool() : snapshot_arr_(), snapshot_set_() {};
         // only need apply method since in a DFS style search, the state of the searched path doesn't need to be stored
         // so we don't need to return the unused ones, we just need to overwrite the contents
-        void Apply(uint_t y_idx, uint_t x_idx, ProblemStateBase *&ret) { 
+        void Apply(uint_t y_idx, uint_t x_idx, ProblemStateBase *&ret) {
             ret = &snapshot_arr_[y_idx][x_idx];
             snapshot_set_[y_idx][x_idx] = true;
         }
@@ -108,6 +108,7 @@ public:
 
     // get the element with the min possiblities
     uint_t GetChildren(Trial *trials);
+    uint_t * GetMultipleChildren(Trial *trials);
     // push into the DFS stack
     // used for 1. DFS search 2. force the solver to search in a particular direction (set problem in another process)
     void PushChildren(const Trial *trails, uint_t len);
