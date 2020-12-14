@@ -11,6 +11,7 @@
 #include "solver/problem-state.h"
 #include "util/global.h"
 #include "itf/validatable-itf.h"
+#include <vector>
 
 
 namespace sudoku {
@@ -108,7 +109,7 @@ public:
 
     // get the element with the min possiblities
     uint_t GetChildren(Trial *trials);
-    uint_t * GetMultipleChildren(Trial *trials);
+    std::vector<uint_t> GetMultipleChildren(Trial *trials);
     // push into the DFS stack
     // used for 1. DFS search 2. force the solver to search in a particular direction (set problem in another process)
     void PushChildren(const Trial *trails, uint_t len);

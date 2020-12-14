@@ -1,5 +1,5 @@
 #include "solver/solver-omp.h"
-
+#include <vector>
 
 namespace sudoku {
 
@@ -31,7 +31,7 @@ bool SolverOmp::SolverInternal() {
             sc_->TryOneStep();
 
         } else {
-            uint_t num[N_NUM] = sc_->GetMultipleChildren(children);
+            std::vector<uint_t> num = sc_->GetMultipleChildren(children);
             #pragma omp parallel for
                 for (int i=1;i<N_NUM;i++) {
                     printf("Parallel Prunning\n");

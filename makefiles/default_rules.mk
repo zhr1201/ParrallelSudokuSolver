@@ -119,7 +119,7 @@ omptest: test_compile
 	  fi;				\
 	done;				\
 	exit $$result; }
-	
+
 #buid up dependency commands
 CC_SRCS=$(wildcard *.cc)
 #check if files exist to run dependency commands on
