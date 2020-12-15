@@ -32,16 +32,24 @@ bool SolverOmp::SolverInternal() {
 
         } else {
             std::vector<uint_t> num = sc_->GetMultipleChildren(children);
-            #pragma omp parallel for
-                for (int i=1;i<N_NUM;i++) {
-                    printf("Parallel Prunning\n");
-                    if (num[i]) {
-                        sc_->PushChildren(children, num[i]);
-                        sc_->GetNextTryIdx(y_idx, x_idx);
-                        sc_->TakeSnapshot(y_idx, x_idx);
-                        sc_->TryOneStep();
+            if (num.size() == 1) {
+                //Serial method
+                uint_t num = sc_->GetChildren(children);
+                sc_->PushChildren(children, num);
+                sc_->GetNextTryIdx(y_idx, x_idx);
+                sc_->TakeSnapshot(y_idx, x_idx);
+            } else {
+                #pragma omp parallel for
+                    for (int i=1;i<N_NUM;i++) {
+                        printf("Parallel Prunning\n");
+                        if (num[i]) {
+                            sc_->PushChildren(children, num[i]);
+                            sc_->GetNextTryIdx(y_idx, x_idx);
+                            sc_->TakeSnapshot(y_idx, x_idx);
+                            sc_->TryOneStep();
+                        }
                     }
-                }
+            }
         }
     }
 
