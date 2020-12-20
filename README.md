@@ -2,9 +2,9 @@
 CMSC818X High Performance Computing final project @UMD
 
 ## Preface
-The performance of the serial solver is already very good even several designs are compromized for compatibility with the parallel solver. Solving a easy problem normally takes only 1 ms - 2 ms on a modern machine. 
+The performance of the serial solver is already very good even several designs are compromized for compatibility with the parallel solver. Solving an easy problem normally takes only 1 ms - 2 ms on a modern machine. 
 
-Since the performance of the serial solver is already very good. The parallel solver aims at deviding the problem better with minimum communication overheads. The performance is worse for parrallel solver if the problem itself is very easy. But if the problem is very hard, one example is that it takes 17 ms for the serial solver to solve test-data-7.csv, the mpi solver only need 3 ms with 9 processes.
+Since the performance of the serial solver is already very good. The parallel solver aims at deviding the problem better with minimum communication overhead. The performance is worse for parrallel solver if the problem itself is very easy. But if the problem is very hard, one example is that it takes 17 ms for the serial solver to solve test-data-7.csv, the mpi solver only need 3 ms with 9 processes.
 
 ## Build
 make depend
@@ -28,7 +28,7 @@ solverbin/solve-sudoku
 
 validatorbin/validate
 
-### test bash scripts
+### Test bash scripts
 
 eval-script.sh
 
